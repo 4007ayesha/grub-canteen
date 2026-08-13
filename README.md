@@ -10,3 +10,4 @@ Smart Canteen Management System
 - database — Database files
 - docs — Project documentation
 Team member: Ayesha
+Team member: Hifza
