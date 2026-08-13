@@ -11,3 +11,4 @@ Smart Canteen Management System
 - docs — Project documentation
 Team member: Ayesha
 Team member: Hifza
+Team member: Sameena
