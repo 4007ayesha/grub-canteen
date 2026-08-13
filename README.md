@@ -9,3 +9,4 @@ Smart Canteen Management System
 - ml — Machine learning components
 - database — Database files
 - docs — Project documentation
+Team member: Ayesha
