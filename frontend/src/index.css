@@ -1,0 +1,35 @@
+@import "./styles/tokens.css";
+
+@font-face {
+  font-family: "Glacial Indifference";
+  src: url("./assets/fonts/GlacialIndifference-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Glacial Indifference";
+  src: url("./assets/fonts/GlacialIndifference-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family);
+  background: var(--color-background);
+  color: var(--color-text);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
