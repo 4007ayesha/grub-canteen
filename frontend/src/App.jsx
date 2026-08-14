@@ -1,3 +1,4 @@
+import PageLayout from "./components/layout/PageLayout";
 import Button from "./components/ui/Button";
 import Input from "./components/ui/Input";
 import Card from "./components/ui/Card";
@@ -5,13 +6,12 @@ import "./App.css";
 
 function App() {
   return (
-    <div className="demo-page">
+    <PageLayout>
       <h1>Grub Canteen Design System</h1>
       <p>Reusable UI components for the Grub Canteen team.</p>
 
       <section className="demo-section">
         <h2>Buttons</h2>
-
         <div className="demo-row">
           <Button>Primary Button</Button>
           <Button variant="secondary">Secondary Button</Button>
@@ -20,7 +20,6 @@ function App() {
 
       <section className="demo-section">
         <h2>Input</h2>
-
         <Input
           label="Email"
           name="email"
@@ -31,14 +30,13 @@ function App() {
 
       <section className="demo-section">
         <h2>Card</h2>
-
         <Card>
           <h3>Veg Burger</h3>
           <p>Fresh vegetable burger</p>
           <strong>₹50</strong>
         </Card>
       </section>
-    </div>
+    </PageLayout>
   );
 }
 
