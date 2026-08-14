@@ -1,0 +1,38 @@
+.demo-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--space-2xl);
+}
+
+.demo-page h1 {
+  margin-bottom: var(--space-sm);
+  font-size: var(--font-size-2xl);
+}
+
+.demo-page > p {
+  margin-bottom: var(--space-2xl);
+  color: var(--color-text-muted);
+}
+
+.demo-section {
+  margin-bottom: var(--space-2xl);
+}
+
+.demo-section h2 {
+  margin-bottom: var(--space-md);
+  font-size: var(--font-size-xl);
+}
+
+.demo-row {
+  display: flex;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.demo-section .ui-input-group {
+  max-width: 400px;
+}
+
+.demo-section .ui-card {
+  max-width: 400px;
+}
