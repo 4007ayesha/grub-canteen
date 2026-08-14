@@ -1,0 +1,31 @@
+.ui-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.ui-badge-default {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.ui-badge-success {
+  background: var(--color-success);
+  color: var(--color-surface);
+}
+
+.ui-badge-warning {
+  background: var(--color-warning);
+  color: var(--color-text);
+}
+
+.ui-badge-error {
+  background: var(--color-error);
+  color: var(--color-surface);
+}
