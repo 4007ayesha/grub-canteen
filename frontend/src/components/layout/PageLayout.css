@@ -1,0 +1,11 @@
+.page-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--color-background);
+}
+
+.page-content {
+  flex: 1;
+  padding: var(--space-lg) 0;
+}

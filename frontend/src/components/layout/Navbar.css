@@ -1,0 +1,61 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-surface);
+  font-family: var(--font-family);
+}
+
+.navbar-logo {
+  color: var(--color-primary);
+  font-weight: bold;
+}
+
+/* Desktop links — horizontal row */
+.navbar-links {
+  display: flex;
+  gap: var(--space-md);
+  list-style: none;
+}
+
+.navbar-links a,
+.navbar-links-mobile a {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+/* Hamburger button — hidden on desktop by default */
+.navbar-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+/* Mobile dropdown — hidden by default (JSX only renders it when menuOpen, but we still style it) */
+.navbar-links-mobile {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--color-surface);
+  padding: var(--space-md);
+}
+
+/* Below 768px = mobile view */
+@media (max-width: 768px) {
+  .navbar-links {
+    display: none; /* hide desktop row */
+  }
+
+  .navbar-toggle {
+    display: block; /* show hamburger */
+  }
+}
