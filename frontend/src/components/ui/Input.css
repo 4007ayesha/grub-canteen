@@ -28,5 +28,5 @@
 
 .ui-input:focus {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgb(249 115 22 / 15%);
+  box-shadow: 0 0 0 3px var(--color-border);
 }

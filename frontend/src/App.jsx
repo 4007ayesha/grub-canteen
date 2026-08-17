@@ -12,6 +12,7 @@ function App() {
 
       <section className="demo-section">
         <h2>Buttons</h2>
+
         <div className="demo-row">
           <Button>Primary Button</Button>
           <Button variant="secondary">Secondary Button</Button>
@@ -20,6 +21,7 @@ function App() {
 
       <section className="demo-section">
         <h2>Input</h2>
+
         <Input
           label="Email"
           name="email"
@@ -30,6 +32,7 @@ function App() {
 
       <section className="demo-section">
         <h2>Card</h2>
+
         <Card>
           <h3>Veg Burger</h3>
           <p>Fresh vegetable burger</p>
