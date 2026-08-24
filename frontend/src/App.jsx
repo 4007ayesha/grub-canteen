@@ -2,11 +2,40 @@ import PageLayout from "./components/layout/PageLayout";
 import Button from "./components/ui/Button";
 import Input from "./components/ui/Input";
 import Card from "./components/ui/Card";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import { useAuth } from "./context/AuthContext";
 import "./App.css";
 
 function App() {
+  const { token, logout } = useAuth();
+
   return (
     <PageLayout>
+      <Login />
+
+      <hr />
+
+      <Register />
+
+      {token && (
+        <>
+          <hr />
+
+          <section className="demo-section">
+            <h2>Account</h2>
+
+            <p>You are logged in successfully.</p>
+
+            <Button onClick={logout}>
+              Logout
+            </Button>
+          </section>
+        </>
+      )}
+
+      <hr />
+
       <h1>Grub Canteen Design System</h1>
       <p>Reusable UI components for the Grub Canteen team.</p>
 
@@ -15,7 +44,10 @@ function App() {
 
         <div className="demo-row">
           <Button>Primary Button</Button>
-          <Button variant="secondary">Secondary Button</Button>
+
+          <Button variant="secondary">
+            Secondary Button
+          </Button>
         </div>
       </section>
 
