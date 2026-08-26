@@ -1,5 +1,9 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import Input from "../components/ui/Input";
+import Button from "../components/ui/Button";
+import "./Auth.css";
 
 function Login() {
   const { login, user } = useAuth();
@@ -8,8 +12,8 @@ function Login() {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
 
-  async function handleLogin(event) {
-    event.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
     try {
       await login(email, password);
@@ -17,59 +21,79 @@ function Login() {
     } catch (error) {
       setMessage(error.message);
     }
-  }
+  };
 
   return (
-    <div>
-      <h1>Grub Canteen</h1>
-      <h2>Welcome Back!</h2>
+    <div className="auth-page">
+      <div className="auth-card">
+        <h1>Welcome Back!</h1>
 
-      {!user ? (
-        <form onSubmit={handleLogin}>
+        {!user ? (
+          <>
+            <p className="auth-subtitle">
+              Login to your Grub Canteen account
+            </p>
+
+            <form onSubmit={handleSubmit}>
+              <Input
+                label="Email"
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+
+              <Input
+                label="Password"
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+
+              <div className="auth-options">
+                <label>
+                  <input type="checkbox" />
+                  Remember me
+                </label>
+
+                <a href="#forgot-password">
+                  Forgot password?
+                </a>
+              </div>
+
+              <Button type="submit" variant="primary">
+                Login
+              </Button>
+            </form>
+
+            {message && (
+              <p className="auth-message">
+                {message}
+              </p>
+            )}
+          </>
+        ) : (
           <div>
-            <label>Email</label>
-            <br />
+            <p className="auth-message">
+              {message || "You are already logged in."}
+            </p>
 
-            <input
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              placeholder="Enter your email"
-              required
-            />
+            <p>
+              Role: <strong>{user.role}</strong>
+            </p>
           </div>
+        )}
 
-          <br />
-
-          <div>
-            <label>Password</label>
-            <br />
-
-            <input
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              placeholder="Enter your password"
-              required
-            />
-          </div>
-
-          <br />
-
-          <button type="submit">
-            Login
-          </button>
-        </form>
-      ) : (
-        <div>
-          <p>{message || "You are already logged in."}</p>
-          <p>
-            Role: <strong>{user.role}</strong>
+        {!user && (
+          <p className="auth-switch">
+            Don't have an account?{" "}
+            <Link to="/Register">Register</Link>
           </p>
-        </div>
-      )}
-
-      {!user && message && <p>{message}</p>}
+        )}
+      </div>
     </div>
   );
 }

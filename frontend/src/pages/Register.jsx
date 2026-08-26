@@ -1,14 +1,24 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { registerUser } from "../api";
+import Input from "../components/ui/Input";
+import Button from "../components/ui/Button";
+import "./Auth.css";
 
 function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
 
-  async function handleRegister(event) {
-    event.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (password !== confirmPassword) {
+      setMessage("Passwords do not match");
+      return;
+    }
 
     try {
       await registerUser({
@@ -23,65 +33,74 @@ function Register() {
       setName("");
       setEmail("");
       setPassword("");
+      setConfirmPassword("");
     } catch (error) {
       setMessage(error.message);
     }
-  }
+  };
 
   return (
-    <div>
-      <h1>Grub Canteen</h1>
-      <h2>Create Account</h2>
+    <div className="auth-page">
+      <div className="auth-card">
+        <h1>Create Account</h1>
 
-      <form onSubmit={handleRegister}>
-        <div>
-          <label>Name</label>
-          <br />
-          <input
+        <p className="auth-subtitle">
+          Register to start using Grub Canteen
+        </p>
+
+        <form onSubmit={handleSubmit}>
+          <Input
+            label="Full Name"
             type="text"
+            placeholder="Enter your full name"
             value={name}
-            onChange={(event) => setName(event.target.value)}
-            placeholder="Enter your name"
+            onChange={(e) => setName(e.target.value)}
             required
           />
-        </div>
 
-        <br />
-
-        <div>
-          <label>Email</label>
-          <br />
-          <input
+          <Input
+            label="Email"
             type="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
             placeholder="Enter your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
           />
-        </div>
 
-        <br />
-
-        <div>
-          <label>Password</label>
-          <br />
-          <input
+          <Input
+            label="Password"
             type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
             placeholder="Create a password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             required
           />
-        </div>
 
-        <br />
+          <Input
+            label="Confirm Password"
+            type="password"
+            placeholder="Confirm your password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+          />
 
-        <button type="submit">
-          Register
-        </button>
-      </form>
+          <Button type="submit" variant="primary">
+            Register
+          </Button>
+        </form>
 
-      {message && <p>{message}</p>}
+        {message && (
+          <p className="auth-message">
+            {message}
+          </p>
+        )}
+
+        <p className="auth-switch">
+          Already have an account?{" "}
+          <Link to="/login">Login</Link>
+        </p>
+      </div>
     </div>
   );
 }
