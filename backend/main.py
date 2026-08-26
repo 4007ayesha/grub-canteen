@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routes.auth import router as auth_router
-from protected_route import router as protected_router
+from backend.routes.auth import router as auth_router
+from backend.protected_route import router as protected_router
 
 app = FastAPI(title="Grub Canteen API")
 
