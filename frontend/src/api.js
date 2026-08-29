@@ -78,3 +78,55 @@ export async function getMenuItems(search = "", categoryId = null) {
 
   return data;
 }
+
+export async function createMenuItem(item, token) {
+  const response = await fetch(`${API_URL}/menu/items`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(item),
+  });
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.detail || "Failed to create item");
+  }
+
+  return data;
+}
+
+export async function updateMenuItem(itemId, item, token) {
+  const response = await fetch(`${API_URL}/menu/items/${itemId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(item),
+  });
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.detail || "Failed to update item");
+  }
+
+  return data;
+}
+
+export async function deleteMenuItem(itemId, token) {
+  const response = await fetch(`${API_URL}/menu/items/${itemId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.detail || "Failed to delete item");
+  }
+
+  return data;
+}
