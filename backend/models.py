@@ -1,5 +1,16 @@
-from sqlalchemy import Column, Integer, String, DateTime, Enum, Text, DECIMAL, Boolean, ForeignKey
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    DateTime,
+    Enum,
+    Text,
+    DECIMAL,
+    Boolean,
+    ForeignKey,
+)
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 from backend.database import Base
 
 
@@ -35,3 +46,16 @@ class MenuItem(Base):
     image_url = Column(String(500), nullable=True)
 
     category = relationship("Category", back_populates="items")
+
+
+class Payment(Base):
+    __tablename__ = "payments"
+
+    id = Column(Integer, primary_key=True, index=True)
+    status = Column(String(20), default="pending")
+    method = Column(String(50))
+    amount = Column(DECIMAL(8, 2), nullable=False)
+    paid_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+    )

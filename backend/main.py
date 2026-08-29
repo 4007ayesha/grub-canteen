@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.routes.auth import router as auth_router
 from backend.protected_route import router as protected_router
 from backend.routes.menu import router as menu_router
+from backend.routes.payment import router as payment_router
 
 
 app = FastAPI(title="Grub Canteen API")
@@ -34,6 +35,9 @@ app.include_router(protected_router)
 
 # Menu routes
 app.include_router(menu_router)
+
+# Payment routes
+app.include_router(payment_router)
 
 
 # Test route
