@@ -39,3 +39,21 @@ class MenuItemOut(MenuItemCreate):
 
     class Config:
         from_attributes = True
+
+# -------------------------
+# Phase 7 - Payment Schemas
+# -------------------------
+
+class PaymentCreate(BaseModel):
+    amount: float
+    method: str
+
+
+class PaymentOut(BaseModel):
+    id: int
+    status: str
+    method: str
+    amount: float
+
+    class Config:
+        from_attributes = True
