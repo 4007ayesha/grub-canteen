@@ -149,3 +149,27 @@ def delete_item(
     return {
         "message": "Menu item deleted successfully"
     }
+
+
+# -------------------------
+# GET single menu item
+# -------------------------
+@router.get(
+    "/items/{item_id}",
+    response_model=MenuItemOut
+)
+def get_item(
+    item_id: int,
+    db: Session = Depends(get_db)
+):
+    item = db.query(MenuItem).filter(
+        MenuItem.id == item_id
+    ).first()
+
+    if not item:
+        raise HTTPException(
+            status_code=404,
+            detail="Item not found"
+        )
+
+    return item
