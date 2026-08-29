@@ -13,6 +13,7 @@ import FoodDetails from "./pages/FoodDetails";
 import { useState } from "react";
 import { useCart } from "./context/CartContext";
 import CartDrawer from "./components/layout/CartDrawer";
+import Checkout from "./pages/Checkout";
 
 function Home() {
   const { token, logout } = useAuth();
@@ -90,6 +91,7 @@ function App() {
           <Route path="/menu" element={<Menu />} />
           <Route path="/admin/menu" element={<AdminMenu />} />
           <Route path="/food/:id" element={<FoodDetails />} />
+          <Route path="/checkout" element={<Checkout />} />
         </Routes>
       </PageLayout>
     </BrowserRouter>

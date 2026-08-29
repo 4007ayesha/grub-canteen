@@ -2,9 +2,16 @@ import { useCart } from "../../context/CartContext";
 import Modal from "../ui/Modal";
 import Button from "../ui/Button";
 import "./CartDrawer.css";
+import { useNavigate } from "react-router-dom";
 
 function CartDrawer({ isOpen, onClose }) {
   const { cart, updateQuantity, removeFromCart, totalAmount } = useCart();
+  const navigate = useNavigate();
+
+  function handleCheckout() {
+    onClose();
+    navigate("/checkout");
+  }
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -60,10 +67,13 @@ function CartDrawer({ isOpen, onClose }) {
         <strong>Total: ₹{totalAmount.toFixed(2)}</strong>
       </div>
 
-      <Button disabled={cart.length === 0}>
+      <Button
+        disabled={cart.length === 0}
+        onClick={handleCheckout}
+      >
         Proceed to Checkout
       </Button>
-    </Modal>
+      </Modal>
   );
 }
 
