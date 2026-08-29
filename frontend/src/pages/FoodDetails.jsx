@@ -32,6 +32,7 @@ function FoodDetails() {
   }, [id]);
 
   function handleAddToCart() {
+    console.log("ADDING ITEM:", item);
     addToCart(item);
     setAdded(true);
   }

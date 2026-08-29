@@ -5,6 +5,8 @@ const CartContext = createContext();
 export function CartProvider({ children }) {
   const [cart, setCart] = useState([]);
 
+  console.log("CART STATE:",cart);
+
   function addToCart(item) {
     setCart((prev) => {
       const existing = prev.find((i) => i.id === item.id);
