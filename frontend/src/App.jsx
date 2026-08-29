@@ -7,6 +7,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import { useAuth } from "./context/AuthContext";
 import "./App.css";
+import Menu from "./pages/Menu";
+import AdminMenu from "./pages/AdminMenu";
 
 function Home() {
   const { token, logout } = useAuth();
@@ -71,6 +73,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/menu" element={<Menu />} />
+          <Route path="/admin/menu" element={<AdminMenu />} />
         </Routes>
       </PageLayout>
     </BrowserRouter>
