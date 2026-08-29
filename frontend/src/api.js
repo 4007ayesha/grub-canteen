@@ -141,3 +141,22 @@ export async function getMenuItem(itemId) {
 
   return data;
 }
+
+export async function mockPay(amount, method, token) {
+  const response = await fetch(`${API_URL}/payment/mock-pay`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ amount, method }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.detail || "Payment request failed");
+  }
+
+  return data;
+}
