@@ -130,3 +130,14 @@ export async function deleteMenuItem(itemId, token) {
 
   return data;
 }
+
+export async function getMenuItem(itemId) {
+  const response = await fetch(`${API_URL}/menu/items/${itemId}`);
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.detail || "Failed to load item");
+  }
+
+  return data;
+}

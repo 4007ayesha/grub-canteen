@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { getMenuItems, getCategories } from "../api";
 import Card from "../components/ui/Card";
 import Badge from "../components/ui/Badge";
@@ -76,21 +77,30 @@ function Menu() {
       {!loading && !error && items.length > 0 && (
         <div className="menu-grid">
           {items.map((item) => (
-            <Card key={item.id} className="menu-item-card">
+          <Link
+             key={item.id}
+             to={`/food/${item.id}`}
+             className="menu-item-link"
+>
+            <Card className="menu-item-card">
               {item.image_url && (
-                <img
-                  src={item.image_url}
-                  alt={item.name}
-                  className="menu-item-image"
-                />
-              )}
-              <h3>{item.name}</h3>
-              {item.description && <p>{item.description}</p>}
-              <div className="menu-item-footer">
-                <strong>₹{item.price}</strong>
-                {!item.available && <Badge variant="warning">Unavailable</Badge>}
-              </div>
-            </Card>
+              <img
+                src={item.image_url}
+                alt={item.name}
+                className="menu-item-image"
+              />
+            )}
+
+            <h3>{item.name}</h3>
+
+            {item.description && <p>{item.description}</p>}
+
+            <div className="menu-item-footer">
+              <strong>₹{item.price}</strong>
+              {!item.available && <Badge variant="warning">Unavailable</Badge>}
+            </div>
+          </Card>
+        </Link>  
           ))}
         </div>
       )}

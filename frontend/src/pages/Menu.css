@@ -50,3 +50,7 @@
 .menu-error {
   color: var(--color-error);
 }
+.menu-item-link {
+  text-decoration: none;
+  color: inherit;
+}

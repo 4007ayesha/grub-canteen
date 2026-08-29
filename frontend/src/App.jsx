@@ -9,14 +9,28 @@ import { useAuth } from "./context/AuthContext";
 import "./App.css";
 import Menu from "./pages/Menu";
 import AdminMenu from "./pages/AdminMenu";
+import FoodDetails from "./pages/FoodDetails";
+import { useState } from "react";
+import { useCart } from "./context/CartContext";
+import CartDrawer from "./components/layout/CartDrawer";
 
 function Home() {
   const { token, logout } = useAuth();
+  const { totalItems } = useCart();
+  const [cartOpen, setCartOpen] = useState(false);
 
   return (
     <>
       <h1>Grub Canteen Design System</h1>
       <p>Reusable UI components for the Grub Canteen team.</p>
+      <Button onClick={() => setCartOpen(true)}>
+        View Cart ({totalItems})
+      </Button>
+      
+      <CartDrawer
+        isOpen={cartOpen}
+        onClose={() => setCartOpen(false)}
+      />
 
       {token && (
         <section className="demo-section">
@@ -75,6 +89,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/menu" element={<Menu />} />
           <Route path="/admin/menu" element={<AdminMenu />} />
+          <Route path="/food/:id" element={<FoodDetails />} />
         </Routes>
       </PageLayout>
     </BrowserRouter>
