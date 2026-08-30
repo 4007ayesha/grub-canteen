@@ -1,0 +1,77 @@
+.order-confirmation-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+  background-color: var(--color-background);
+}
+
+.order-confirmation-card {
+  width: 100%;
+  max-width: 450px;
+  padding: 40px;
+  text-align: center;
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.success-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+.order-confirmation-card h1 {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.success-message {
+  margin-bottom: 28px;
+  color: #666;
+}
+
+.order-token {
+  padding: 20px;
+  margin-bottom: 24px;
+  border-radius: 12px;
+  background-color: var(--color-secondary);
+}
+
+.order-token p {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.order-token h2 {
+  margin: 0;
+  font-size: 36px;
+  letter-spacing: 2px;
+}
+
+.order-details {
+  margin-bottom: 28px;
+  font-size: 18px;
+}
+
+.order-details p {
+  margin: 10px 0;
+}
+
+.back-to-menu {
+  display: inline-block;
+  padding: 12px 24px;
+  border-radius: 8px;
+  background-color: var(--color-primary);
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  transition: opacity 0.2s ease;
+}
+
+.back-to-menu:hover {
+  opacity: 0.85;
+}
