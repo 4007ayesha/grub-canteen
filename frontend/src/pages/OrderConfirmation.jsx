@@ -1,10 +1,10 @@
+```jsx
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import "./OrderConfirmation.css";
 
 const OrderConfirmation = () => {
   const location = useLocation();
-
   const order = location.state?.order;
 
   return (
@@ -29,8 +29,15 @@ const OrderConfirmation = () => {
           </p>
 
           <p>
-            <strong>Payment:</strong> {order?.payment_method || "Cash"}
+            <strong>Payment:</strong>{" "}
+            {order?.payment_method === "cash" ? "Cash" : "UPI"}
           </p>
+
+          {order?.payment_method === "cash" && (
+            <p>
+              <strong>Payment Status:</strong> Pending — Pay at the counter
+            </p>
+          )}
         </div>
 
         <Link to="/menu" className="back-to-menu">
@@ -42,3 +49,4 @@ const OrderConfirmation = () => {
 };
 
 export default OrderConfirmation;
+```

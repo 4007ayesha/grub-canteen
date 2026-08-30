@@ -1,18 +1,26 @@
+```jsx
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import PageLayout from "./components/layout/PageLayout";
+
 import Button from "./components/ui/Button";
 import Input from "./components/ui/Input";
 import Card from "./components/ui/Card";
+
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+
 import { useAuth } from "./context/AuthContext";
 import "./App.css";
+
 import Menu from "./pages/Menu";
 import AdminMenu from "./pages/AdminMenu";
 import FoodDetails from "./pages/FoodDetails";
+
 import { useState } from "react";
 import { useCart } from "./context/CartContext";
 import CartDrawer from "./components/layout/CartDrawer";
+
 import Checkout from "./pages/Checkout";
 import OrderConfirmation from "./pages/OrderConfirmation";
 
@@ -25,10 +33,11 @@ function Home() {
     <>
       <h1>Grub Canteen Design System</h1>
       <p>Reusable UI components for the Grub Canteen team.</p>
+
       <Button onClick={() => setCartOpen(true)}>
         View Cart ({totalItems})
       </Button>
-      
+
       <CartDrawer
         isOpen={cartOpen}
         onClose={() => setCartOpen(false)}
@@ -87,13 +96,23 @@ function App() {
       <PageLayout>
         <Routes>
           <Route path="/" element={<Home />} />
+
           <Route path="/login" element={<Login />} />
+
           <Route path="/register" element={<Register />} />
+
           <Route path="/menu" element={<Menu />} />
+
           <Route path="/admin/menu" element={<AdminMenu />} />
+
           <Route path="/food/:id" element={<FoodDetails />} />
+
           <Route path="/checkout" element={<Checkout />} />
-          <Route path="/order-confirmation" element={<OrderConfirmation />} />
+
+          <Route
+            path="/order-confirmation"
+            element={<OrderConfirmation />}
+          />
         </Routes>
       </PageLayout>
     </BrowserRouter>
@@ -101,3 +120,4 @@ function App() {
 }
 
 export default App;
+```

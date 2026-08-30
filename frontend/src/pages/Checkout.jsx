@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
-import { mockPay } from "../api";
+import { mockPay, createOrder } from "../api";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
 import "./Checkout.css";
@@ -15,25 +15,46 @@ function Checkout() {
   const [method, setMethod] = useState("upi");
   const [status, setStatus] = useState("idle");
   const [errorMessage, setErrorMessage] = useState("");
-
   async function handlePayNow() {
-    setStatus("processing");
-    setErrorMessage("");
+  setStatus("processing");
+  setErrorMessage("");
 
-    try {
-      const result = await mockPay(totalAmount, method, token);
+  try {
+    const paymentResult = await mockPay(totalAmount, method, token);
 
-      if (result.status === "success") {
-        setStatus("success");
-        clearCart();
-      } else {
-        setStatus("failed");
-      }
-    } catch (err) {
+    if (paymentResult.status !== "success") {
       setStatus("failed");
-      setErrorMessage(err.message);
+      setErrorMessage("Payment failed. Please try again.");
+      return;
     }
+
+    const orderData = {
+      items: cart.map((item) => ({
+        menu_item_id: item.id,
+        quantity: item.quantity,
+        price_at_order: Number(item.price),
+      })),
+      total_amount: Number(totalAmount),
+      payment_id: paymentResult.id,
+    };
+
+    const order = await createOrder(orderData, token);
+
+clearCart();
+
+navigate("/order-confirmation", {
+  state: {
+    order: {
+      ...order,
+      payment_method: method,
+    },
+  },
+});
+  } catch (err) {
+    setStatus("failed");
+    setErrorMessage(err.message);
   }
+}
 
   if (cart.length === 0 && status !== "success") {
     return (
@@ -107,8 +128,12 @@ function Checkout() {
             onClick={handlePayNow}
             disabled={status === "processing"}
           >
-            {status === "processing" ? "Processing..." : "Pay Now"}
-          </Button>
+            {status === "processing"
+              ? "Processing..."
+              : method === "cash"
+                ? "Confirm Order"
+                : "Pay Now"}
+            </Button>
 
           {status === "failed" && (
             <p className="checkout-error">
@@ -118,17 +143,8 @@ function Checkout() {
         </Card>
       )}
 
-      {status === "success" && (
-        <Card className="checkout-result">
-          <p className="checkout-success">
-            Payment Successful ✅
-          </p>
+      
 
-          <Button onClick={() => navigate("/menu")}>
-            Back to Menu
-          </Button>
-        </Card>
-      )}
     </div>
   );
 }
