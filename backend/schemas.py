@@ -40,6 +40,7 @@ class MenuItemOut(MenuItemCreate):
     class Config:
         from_attributes = True
 
+
 # -------------------------
 # Phase 7 - Payment Schemas
 # -------------------------
@@ -54,6 +55,40 @@ class PaymentOut(BaseModel):
     status: str
     method: str
     amount: float
+
+    class Config:
+        from_attributes = True
+
+
+# -------------------------
+# Phase 8 - Order Schemas
+# -------------------------
+
+class OrderItemCreate(BaseModel):
+    menu_item_id: int
+    quantity: int
+    price_at_order: float
+
+
+class OrderCreate(BaseModel):
+    items: list[OrderItemCreate]
+    total_amount: float
+    payment_id: int
+
+
+class OrderItemOut(OrderItemCreate):
+    id: int
+
+    class Config:
+        from_attributes = True
+
+
+class OrderOut(BaseModel):
+    id: int
+    token_number: str
+    status: str
+    total_amount: float
+    items: list[OrderItemOut]
 
     class Config:
         from_attributes = True
