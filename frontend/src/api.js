@@ -160,3 +160,23 @@ export async function mockPay(amount, method, token) {
 
   return data;
 }
+
+export async function createOrder(orderData, token) {
+  const response = await fetch(`${API_URL}/orders/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(orderData),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.detail || "Failed to create order");
+  }
+
+  return data;
+}
+
