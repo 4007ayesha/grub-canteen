@@ -180,3 +180,57 @@ export async function createOrder(orderData, token) {
   return data;
 }
 
+export async function createPrediction(predictionData, token) {
+  const response = await fetch(`${API_URL}/predictions/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(predictionData),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.detail || "Failed to generate prediction");
+  }
+
+  return data;
+}
+
+export async function getPredictions(token) {
+  const response = await fetch(`${API_URL}/predictions/`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.detail || "Failed to load predictions");
+  }
+
+  return data;
+}
+
+export async function updatePredictionActual(predictionId, actualQty, token) {
+  const response = await fetch(
+    `${API_URL}/predictions/${predictionId}/actual?actual_qty=${actualQty}`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.detail || "Failed to update actual quantity");
+  }
+
+  return data;
+}
