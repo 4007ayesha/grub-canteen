@@ -1,56 +1,262 @@
 .menu-page {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: var(--space-lg);
+  padding-bottom: var(--space-2xl);
 }
+
+/* =========================
+   PAGE HEADER
+   ========================= */
+
+.menu-header {
+  margin-bottom: var(--space-xs);
+}
+
+.menu-header h1 {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.menu-header p {
+  margin: var(--space-xs) 0 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* =========================
+   SEARCH
+   ========================= */
+
+.menu-search {
+  width: 100%;
+  max-width: 650px;
+}
+
+/* =========================
+   CATEGORIES
+   ========================= */
 
 .menu-categories {
   display: flex;
+  align-items: center;
   gap: var(--space-sm);
   flex-wrap: wrap;
 }
 
 .menu-chip {
-  padding: 8px 16px;
-  border-radius: var(--radius-md);
+  padding: 9px 18px;
   border: 1px solid var(--color-border);
+  border-radius: 999px;
   background: var(--color-surface);
   color: var(--color-text);
   cursor: pointer;
+
+  font-size: var(--font-size-sm);
   font-weight: 600;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.menu-chip:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  transform: translateY(-1px);
 }
 
 .menu-chip.active {
   background: var(--color-primary);
   color: white;
   border-color: var(--color-primary);
+  box-shadow: 0 4px 10px rgba(63, 58, 58, 0.12);
 }
+
+.menu-chip.active:hover {
+  color: white;
+}
+
+/* =========================
+   FOOD GRID
+   ========================= */
 
 .menu-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: var(--space-md);
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: var(--space-lg);
+  margin-top: var(--space-sm);
 }
+
+/* =========================
+   FOOD CARD
+   ========================= */
+
+.menu-item-link {
+  display: block;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+}
+
+.menu-item-card {
+  height: 100%;
+  overflow: hidden;
+  padding: var(--space-md);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.menu-item-link:hover .menu-item-card {
+  transform: translateY(-5px);
+  border-color: var(--color-primary);
+  box-shadow: 0 12px 28px rgba(63, 58, 58, 0.13);
+}
+
+/* =========================
+   FOOD IMAGE
+   ========================= */
 
 .menu-item-image {
   width: 100%;
-  height: 140px;
+  height: 155px;
+  display: block;
+
   object-fit: cover;
   border-radius: var(--radius-md);
-  margin-bottom: var(--space-sm);
+
+  margin-bottom: var(--space-md);
+
+  transition: transform 0.25s ease;
 }
+
+.menu-item-link:hover .menu-item-image {
+  transform: scale(1.02);
+}
+
+/* =========================
+   FOOD CONTENT
+   ========================= */
+
+.menu-item-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 125px;
+}
+
+.menu-item-content h3 {
+  margin: 0 0 var(--space-xs);
+
+  color: var(--color-text);
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.menu-item-content p {
+  margin: 0;
+
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+/* =========================
+   PRICE + AVAILABILITY
+   ========================= */
 
 .menu-item-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: var(--space-sm);
+
+  gap: var(--space-sm);
+  margin-top: auto;
+  padding-top: var(--space-md);
+}
+
+.menu-item-footer strong {
+  color: var(--color-text);
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+}
+
+/* =========================
+   STATUS / ERROR
+   ========================= */
+
+.menu-status {
+  margin: var(--space-md) 0;
+  color: var(--color-text-muted);
 }
 
 .menu-error {
+  margin: var(--space-md) 0;
+  padding: var(--space-md);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+
+  background: var(--color-surface);
   color: var(--color-error);
 }
-.menu-item-link {
-  text-decoration: none;
-  color: inherit;
+
+/* =========================
+   TABLET
+   ========================= */
+
+@media (max-width: 900px) {
+  .menu-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-md);
+  }
+
+  .menu-item-image {
+    height: 150px;
+  }
+}
+
+/* =========================
+   MOBILE
+   ========================= */
+
+@media (max-width: 600px) {
+  .menu-page {
+    gap: var(--space-md);
+  }
+
+  .menu-header h1 {
+    font-size: var(--font-size-xl);
+  }
+
+  .menu-categories {
+    gap: 8px;
+  }
+
+  .menu-chip {
+    padding: 8px 14px;
+  }
+
+  .menu-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  .menu-item-image {
+    height: 180px;
+  }
 }

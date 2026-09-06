@@ -1,5 +1,7 @@
-from pydantic import BaseModel, EmailStr
+
+from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
+from datetime import date
 
 
 class UserCreate(BaseModel):
@@ -89,6 +91,99 @@ class OrderOut(BaseModel):
     status: str
     total_amount: float
     items: list[OrderItemOut]
+
+    class Config:
+        from_attributes = True
+
+
+# -------------------------
+# Phase 11 - Feedback Schemas
+# -------------------------
+
+class FeedbackCreate(BaseModel):
+    order_id: int
+    rating: int = Field(ge=1, le=5)
+    comment: Optional[str] = None
+
+
+class FeedbackOut(FeedbackCreate):
+    id: int
+
+    class Config:
+        from_attributes = True
+
+
+# -------------------------
+# Phase 11 - Notification Schemas
+# -------------------------
+
+class NotificationOut(BaseModel):
+    id: int
+    message: str
+    read: bool
+
+    class Config:
+        from_attributes = True
+
+
+# -------------------------
+# Phase 12 - Inventory Schemas
+# -------------------------
+
+class InventoryUpdate(BaseModel):
+    current_stock: int
+    min_threshold: int = 10
+
+
+class InventoryOut(BaseModel):
+    id: int
+    menu_item_id: int
+    current_stock: int
+    min_threshold: int
+
+    class Config:
+        from_attributes = True
+
+
+# -------------------------
+# Phase 12 - Waste Record Schemas
+# -------------------------
+
+class WasteRecordCreate(BaseModel):
+    menu_item_id: int
+    date: date
+    prepared_qty: int
+    sold_qty: int
+    wasted_qty: int
+
+
+class WasteRecordOut(WasteRecordCreate):
+    id: int
+
+    class Config:
+        from_attributes = True
+
+
+# -------------------------
+# Phase 16 - Demand Prediction Schemas
+# -------------------------
+
+class PredictionRequest(BaseModel):
+    menu_item_id: int
+    date: date
+    day_of_week: int
+    previous_day_sales: int
+    seven_day_avg: float
+    is_holiday: bool
+    is_college_event: bool
+
+
+class PredictionOut(BaseModel):
+    id: int
+    menu_item_id: int
+    date: date
+    predicted_qty: int
+    actual_qty: Optional[int] = None
 
     class Config:
         from_attributes = True

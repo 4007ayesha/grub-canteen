@@ -1,0 +1,74 @@
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-family);
+}
+
+/* =========================
+   Sidebar
+   ========================= */
+
+.admin-sidebar {
+  width: 250px;
+  min-height: 100vh;
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  padding: var(--space-xl);
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.admin-sidebar-title {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  color: var(--color-primary-dark);
+  line-height: 1.2;
+}
+
+.admin-sidebar-subtitle {
+  margin: var(--space-xs) 0 var(--space-xl);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* =========================
+   Navigation
+   ========================= */
+
+.admin-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.admin-nav a {
+  display: block;
+  text-decoration: none;
+  color: var(--color-text);
+  padding: 12px var(--space-md);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  transition: 0.2s ease;
+}
+
+.admin-nav a:hover {
+  background: var(--color-background);
+}
+
+.admin-nav a.active {
+  background: var(--color-primary);
+  color: white;
+}
+
+/* =========================
+   Main Content
+   ========================= */
+
+.admin-content {
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-2xl);
+  box-sizing: border-box;
+}

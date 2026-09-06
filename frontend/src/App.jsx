@@ -1,7 +1,8 @@
-```jsx
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import PageLayout from "./components/layout/PageLayout";
+import AdminLayout from "./components/layout/AdminLayout";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 import Button from "./components/ui/Button";
 import Input from "./components/ui/Input";
@@ -9,12 +10,17 @@ import Card from "./components/ui/Card";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import AdminDashboard from "./pages/AdminDashboard";
+import Orders from "./pages/Orders";
 
 import { useAuth } from "./context/AuthContext";
 import "./App.css";
 
 import Menu from "./pages/Menu";
 import AdminMenu from "./pages/AdminMenu";
+import AdminOrders from "./pages/AdminOrders";
+import AdminInventory from "./pages/AdminInventory";
+import AdminAnalytics from "./pages/AdminAnalytics";
 import FoodDetails from "./pages/FoodDetails";
 
 import { useState } from "react";
@@ -23,6 +29,8 @@ import CartDrawer from "./components/layout/CartDrawer";
 
 import Checkout from "./pages/Checkout";
 import OrderConfirmation from "./pages/OrderConfirmation";
+import OrderTracking from "./pages/OrderTracking";
+
 
 function Home() {
   const { token, logout } = useAuth();
@@ -90,34 +98,142 @@ function Home() {
   );
 }
 
+
 function App() {
   return (
     <BrowserRouter>
-      <PageLayout>
-        <Routes>
-          <Route path="/" element={<Home />} />
 
-          <Route path="/login" element={<Login />} />
+      <Routes>
 
-          <Route path="/register" element={<Register />} />
+        {/* ========================= */}
+        {/* Student / Public Pages */}
+        {/* ========================= */}
 
-          <Route path="/menu" element={<Menu />} />
+        <Route
+          path="/"
+          element={
+            <PageLayout>
+              <Login />
+            </PageLayout>
+          }
+        />
 
-          <Route path="/admin/menu" element={<AdminMenu />} />
+        <Route
+          path="/login"
+          element={
+            <PageLayout>
+              <Login />
+            </PageLayout>
+          }
+        />
 
-          <Route path="/food/:id" element={<FoodDetails />} />
+        <Route
+          path="/register"
+          element={
+            <PageLayout>
+              <Register />
+            </PageLayout>
+          }
+        />
 
-          <Route path="/checkout" element={<Checkout />} />
+        <Route
+          path="/menu"
+          element={
+            <PageLayout>
+              <Menu />
+            </PageLayout>
+          }
+        />
+
+        <Route
+          path="/orders"
+          element={
+            <PageLayout>
+              <Orders />
+            </PageLayout>
+          }
+        />
+
+        <Route
+          path="/food/:id"
+          element={
+            <PageLayout>
+              <FoodDetails />
+            </PageLayout>
+          }
+        />
+
+        <Route
+          path="/checkout"
+          element={
+            <PageLayout>
+              <Checkout />
+            </PageLayout>
+          }
+        />
+
+        <Route
+          path="/order-confirmation"
+          element={
+            <PageLayout>
+              <OrderConfirmation />
+            </PageLayout>
+          }
+        />
+
+        <Route
+          path="/order-tracking/:orderId"
+          element={
+            <PageLayout>
+              <OrderTracking />
+            </PageLayout>
+          }
+        />
+
+
+        {/* ========================= */}
+        {/* Admin Pages */}
+        {/* ========================= */}
+
+        <Route
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <AdminLayout />
+            </ProtectedRoute>
+          }
+        >
 
           <Route
-            path="/order-confirmation"
-            element={<OrderConfirmation />}
+            path="/admin/dashboard"
+            element={<AdminDashboard />}
           />
-        </Routes>
-      </PageLayout>
+
+          <Route
+            path="/admin/menu"
+            element={<AdminMenu />}
+          />
+
+          <Route
+            path="/admin/orders"
+            element={<AdminOrders />}
+          />
+
+          <Route
+            path="/admin/inventory"
+            element={<AdminInventory />}
+          />
+
+          <Route
+            path="/admin/analytics"
+            element={<AdminAnalytics />}
+          />
+
+        </Route>
+
+      </Routes>
+
     </BrowserRouter>
   );
 }
 
 export default App;
-```

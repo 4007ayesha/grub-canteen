@@ -1,0 +1,95 @@
+.feedback-form {
+  margin-top: var(--space-lg);
+  padding: var(--space-lg);
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.feedback-form h3 {
+  margin: 0 0 var(--space-md);
+  color: var(--color-text);
+  font-size: var(--font-size-lg);
+}
+
+.feedback-rating,
+.feedback-comment {
+  margin-bottom: var(--space-md);
+}
+
+.feedback-form label {
+  display: block;
+  margin-bottom: var(--space-xs);
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.feedback-form select,
+.feedback-form textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: var(--font-family);
+  font-size: var(--font-size-md);
+  box-sizing: border-box;
+}
+
+.feedback-form textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+.feedback-form select:focus,
+.feedback-form textarea:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
+}
+
+.feedback-submit {
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  color: var(--color-text);
+  font-family: var(--font-family);
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.feedback-submit:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
+}
+
+.feedback-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.feedback-success {
+  margin: 0 0 var(--space-md);
+  padding: 10px 12px;
+  background: var(--color-success);
+  color: white;
+  border-radius: var(--radius-md);
+}
+
+.feedback-error {
+  margin: 0 0 var(--space-md);
+  padding: 10px 12px;
+  background: var(--color-error);
+  color: white;
+  border-radius: var(--radius-md);
+}
+
+@media (max-width: 768px) {
+  .feedback-form {
+    padding: var(--space-md);
+  }
+}

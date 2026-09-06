@@ -1,0 +1,233 @@
+.admin-analytics-page {
+  width: 100%;
+}
+
+.admin-analytics-header {
+  margin-bottom: var(--space-xl);
+}
+
+.admin-analytics-header h1 {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--font-size-2xl);
+}
+
+.admin-analytics-header p {
+  margin: var(--space-xs) 0 0;
+  color: var(--color-text-muted);
+}
+
+/* Summary Cards */
+
+.analytics-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.analytics-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 12px rgba(63, 58, 58, 0.06);
+}
+
+.summary-card {
+  padding: var(--space-lg);
+}
+
+.summary-card-label {
+  display: block;
+  margin-bottom: var(--space-sm);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.summary-card-value {
+  display: block;
+  color: var(--color-text);
+  font-size: 28px;
+  line-height: 1.2;
+}
+
+/* Charts */
+
+.analytics-charts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.chart-card {
+  padding: var(--space-lg);
+  min-width: 0;
+}
+
+.chart-header {
+  margin-bottom: var(--space-lg);
+}
+
+.chart-header h2 {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--font-size-lg);
+}
+
+.chart-header p {
+  margin: var(--space-xs) 0 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.chart-container {
+  width: 100%;
+  height: 300px;
+}
+
+/* Feedback + Waste */
+
+.analytics-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-lg);
+}
+
+.info-card {
+  padding: var(--space-lg);
+}
+
+.info-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+}
+
+.info-card-header h2 {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--font-size-lg);
+}
+
+.info-card-icon {
+  font-size: 24px;
+}
+
+.feedback-content strong {
+  display: block;
+  color: var(--color-text);
+  font-size: 40px;
+  line-height: 1;
+}
+
+.feedback-content strong span {
+  margin-left: 4px;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-md);
+}
+
+.feedback-content p {
+  margin: var(--space-md) 0 0;
+  color: var(--color-text-muted);
+}
+
+/* Waste */
+
+.waste-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-md);
+}
+
+.waste-stats div {
+  padding: var(--space-md);
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.waste-stats span {
+  display: block;
+  margin-bottom: var(--space-xs);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.waste-stats strong {
+  color: var(--color-text);
+  font-size: var(--font-size-lg);
+}
+
+/* Loading / Error / Empty */
+
+.analytics-loading,
+.analytics-error,
+.analytics-empty {
+  padding: var(--space-2xl);
+  text-align: center;
+  border-radius: var(--radius-lg);
+}
+
+.analytics-loading {
+  color: var(--color-text-muted);
+}
+
+.analytics-error {
+  background: var(--color-error);
+  color: white;
+}
+
+.analytics-empty {
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  background: var(--color-background);
+  border: 1px dashed var(--color-border);
+}
+
+/* Responsive */
+
+@media (max-width: 1024px) {
+  .analytics-summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .analytics-charts-grid,
+  .analytics-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .waste-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .analytics-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-card-value {
+    font-size: 24px;
+  }
+
+  .chart-card,
+  .info-card {
+    padding: var(--space-md);
+  }
+
+  .waste-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .waste-stats {
+    grid-template-columns: 1fr;
+  }
+}

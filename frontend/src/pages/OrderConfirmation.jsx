@@ -43,6 +43,14 @@ const OrderConfirmation = () => {
           )}
         </div>
 
+        {/* Phase 9 - Track Order */}
+        <Link
+          to={`/order-tracking/${order.id}`}
+          className="back-to-menu"
+        >
+          Track Order
+        </Link>
+
         <Link to="/menu" className="back-to-menu">
           Back to Menu
         </Link>

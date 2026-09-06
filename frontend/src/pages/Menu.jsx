@@ -39,26 +39,42 @@ function Menu() {
 
   return (
     <div className="menu-page">
-      <h1>Menu</h1>
 
-      <Input
-        name="search"
-        placeholder="Search food..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
+      {/* Page Header */}
+      <div className="menu-header">
+        <div>
+          <h1>Menu</h1>
+          <p>Choose your favorite food and place your order.</p>
+        </div>
+      </div>
 
+      {/* Search */}
+      <div className="menu-search">
+        <Input
+          name="search"
+          placeholder="Search food..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
+
+      {/* Categories */}
       <div className="menu-categories">
         <button
-          className={`menu-chip ${selectedCategory === null ? "active" : ""}`}
+          className={`menu-chip ${
+            selectedCategory === null ? "active" : ""
+          }`}
           onClick={() => setSelectedCategory(null)}
         >
           All
         </button>
+
         {categories.map((cat) => (
           <button
             key={cat.id}
-            className={`menu-chip ${selectedCategory === cat.id ? "active" : ""}`}
+            className={`menu-chip ${
+              selectedCategory === cat.id ? "active" : ""
+            }`}
             onClick={() => setSelectedCategory(cat.id)}
           >
             {cat.name}
@@ -66,44 +82,70 @@ function Menu() {
         ))}
       </div>
 
-      {loading && <p>Loading menu...</p>}
-
-      {!loading && error && <p className="menu-error">{error}</p>}
-
-      {!loading && !error && items.length === 0 && (
-        <p>No food items found.</p>
+      {/* Loading */}
+      {loading && (
+        <p className="menu-status">
+          Loading menu...
+        </p>
       )}
 
+      {/* Error */}
+      {!loading && error && (
+        <p className="menu-error">
+          {error}
+        </p>
+      )}
+
+      {/* Empty */}
+      {!loading && !error && items.length === 0 && (
+        <p className="menu-status">
+          No food items found.
+        </p>
+      )}
+
+      {/* Food Items */}
       {!loading && !error && items.length > 0 && (
         <div className="menu-grid">
           {items.map((item) => (
-          <Link
-             key={item.id}
-             to={`/food/${item.id}`}
-             className="menu-item-link"
->
-            <Card className="menu-item-card">
-              {item.image_url && (
-              <img
-                src={item.image_url}
-                alt={item.name}
-                className="menu-item-image"
-              />
-            )}
+            <Link
+              key={item.id}
+              to={`/food/${item.id}`}
+              className="menu-item-link"
+            >
+              <Card className="menu-item-card">
 
-            <h3>{item.name}</h3>
+                {item.image_url && (
+                  <img
+                    src={item.image_url}
+                    alt={item.name}
+                    className="menu-item-image"
+                  />
+                )}
 
-            {item.description && <p>{item.description}</p>}
+                <div className="menu-item-content">
+                  <h3>{item.name}</h3>
 
-            <div className="menu-item-footer">
-              <strong>₹{item.price}</strong>
-              {!item.available && <Badge variant="warning">Unavailable</Badge>}
-            </div>
-          </Card>
-        </Link>  
+                  {item.description && (
+                    <p>{item.description}</p>
+                  )}
+
+                  <div className="menu-item-footer">
+                    <strong>₹{item.price}</strong>
+
+                    {!item.available && (
+                      <Badge variant="warning">
+                        Unavailable
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+
+              </Card>
+            </Link>
           ))}
         </div>
       )}
+
     </div>
   );
 }

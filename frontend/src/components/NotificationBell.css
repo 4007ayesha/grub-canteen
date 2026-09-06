@@ -1,0 +1,74 @@
+
+.notification-bell {
+  position: relative;
+  display: inline-block;
+}
+
+.notification-bell > button {
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  padding: 4px 8px;
+}
+
+.notification-count {
+  position: absolute;
+  top: -4px;
+  right: -2px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 50%;
+  background: var(--color-error);
+  color: white;
+  font-size: 11px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 300px;
+  max-height: 350px;
+  overflow-y: auto;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  padding: var(--space-md);
+  z-index: 1000;
+}
+
+.notification-dropdown h3 {
+  margin: 0 0 var(--space-md);
+  color: var(--color-text);
+  font-size: var(--font-size-lg);
+}
+
+.notification-item {
+  padding: var(--space-sm) var(--space-md);
+  margin-bottom: var(--space-sm);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+}
+
+.notification-item.unread {
+  background: var(--color-background);
+  font-weight: 600;
+}
+
+.notification-item.read {
+  background: transparent;
+  font-weight: normal;
+}
+
+.notification-item p {
+  margin: 0;
+  font-size: var(--font-size-sm);
+}

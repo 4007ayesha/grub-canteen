@@ -7,6 +7,19 @@ from backend.routes.menu import router as menu_router
 from backend.routes.payment import router as payment_router
 from backend.routes.orders import router as orders_router
 
+# Phase 11 - Feedback & Notifications
+from backend.routes.feedback import router as feedback_router
+from backend.routes.notifications import router as notifications_router
+
+# Phase 12 - Inventory & Waste
+from backend.routes.inventory import router as inventory_router
+
+# Phase 13 - Analytics
+from backend.routes.analytics import router as analytics_router
+
+# Phase 16 - ML Demand Predictions
+from backend.routes.predictions import router as predictions_router
+
 
 app = FastAPI(title="Grub Canteen API")
 
@@ -42,6 +55,21 @@ app.include_router(payment_router)
 
 # Order routes
 app.include_router(orders_router)
+
+# Phase 11 - Feedback routes
+app.include_router(feedback_router)
+
+# Phase 11 - Notification routes
+app.include_router(notifications_router)
+
+# Phase 12 - Inventory & Waste routes
+app.include_router(inventory_router)
+
+# Phase 13 - Analytics routes
+app.include_router(analytics_router)
+
+# Phase 16 - ML Demand Prediction routes
+app.include_router(predictions_router)
 
 
 # Test route

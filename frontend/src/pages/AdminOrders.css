@@ -1,0 +1,201 @@
+.admin-orders-page {
+  width: 100%;
+}
+
+.admin-orders-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-xl);
+}
+
+.admin-orders-header h1 {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--font-size-2xl);
+}
+
+.admin-orders-header p {
+  margin: var(--space-xs) 0 0;
+  color: var(--color-text-muted);
+}
+
+/* Filter section */
+.admin-orders-filter {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+  padding: var(--space-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.admin-orders-filter label {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.admin-orders-filter select {
+  padding: 10px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: var(--font-family);
+  font-size: var(--font-size-md);
+  cursor: pointer;
+}
+
+/* Messages */
+.admin-orders-message {
+  margin-bottom: var(--space-md);
+  padding: 12px var(--space-md);
+  background: var(--color-success);
+  color: white;
+  border-radius: var(--radius-md);
+}
+
+.admin-orders-error {
+  margin-bottom: var(--space-md);
+  padding: 12px var(--space-md);
+  background: var(--color-error);
+  color: white;
+  border-radius: var(--radius-md);
+}
+
+/* Orders grid */
+.admin-orders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-lg);
+}
+
+.admin-order-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  box-shadow: 0 4px 12px rgba(63, 58, 58, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-order-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(63, 58, 58, 0.1);
+}
+
+.admin-order-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.admin-order-card-header h3 {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  color: var(--color-text);
+}
+
+.admin-order-details {
+  display: grid;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.admin-order-detail {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-order-detail span {
+  color: var(--color-text-muted);
+}
+
+.admin-order-detail strong {
+  color: var(--color-text);
+}
+
+/* Status badges */
+.admin-order-status {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-received {
+  background: #E8D6DC;
+  color: var(--color-text);
+}
+
+.status-preparing {
+  background: #F5DFA8;
+  color: var(--color-text);
+}
+
+.status-ready {
+  background: #D7E7D4;
+  color: var(--color-text);
+}
+
+.status-collected {
+  background: #D6E0E8;
+  color: var(--color-text);
+}
+
+/* Status control */
+.admin-status-control {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-family);
+  font-size: var(--font-size-md);
+  cursor: pointer;
+}
+
+.admin-status-control:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
+}
+
+/* Empty state */
+.admin-orders-empty {
+  padding: var(--space-2xl);
+  text-align: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  color: var(--color-text-muted);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .admin-orders-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-md);
+  }
+
+  .admin-orders-filter {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .admin-orders-filter select {
+    width: 100%;
+  }
+
+  .admin-orders-grid {
+    grid-template-columns: 1fr;
+  }
+}
