@@ -32,9 +32,12 @@ function NotificationBell() {
   };
 
   useEffect(() => {
-    fetchNotifications();
-  }, [token]);
+  fetchNotifications();
 
+  const intervalId = setInterval(fetchNotifications, 10000); // re-check every 10s
+
+  return () => clearInterval(intervalId);
+}, [token]);
   const markAsRead = async (notificationId) => {
     try {
       const response = await fetch(
