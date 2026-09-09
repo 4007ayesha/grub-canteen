@@ -1,15 +1,15 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { getMenuItems, getCategories } from "../api";
+import { useCart } from "../context/CartContext";
 import Card from "../components/ui/Card";
 import Badge from "../components/ui/Badge";
-import Input from "../components/ui/Input";
 import "./Menu.css";
 
 function Menu() {
+  const { addToCart } = useCart();
   const [items, setItems] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -17,16 +17,14 @@ function Menu() {
   useEffect(() => {
     getCategories()
       .then(setCategories)
-      .catch(() => {
-        setCategories([]);
-      });
+      .catch(() => setCategories([]));
   }, []);
 
   useEffect(() => {
     setLoading(true);
     setError("");
 
-    getMenuItems(search, selectedCategory)
+    getMenuItems("", selectedCategory)
       .then((data) => {
         setItems(data);
         setLoading(false);
@@ -35,35 +33,23 @@ function Menu() {
         setError("Unable to load menu. Please try again.");
         setLoading(false);
       });
-  }, [search, selectedCategory]);
+  }, [selectedCategory]);
+
+  function handleAddToCart(e, item) {
+    e.preventDefault();
+    e.stopPropagation();
+    addToCart(item);
+  }
 
   return (
     <div className="menu-page">
+      <p className="menu-subtitle">
+        Choose your favorite food and place your order.
+      </p>
 
-      {/* Page Header */}
-      <div className="menu-header">
-        <div>
-          <h1>Menu</h1>
-          <p>Choose your favorite food and place your order.</p>
-        </div>
-      </div>
-
-      {/* Search */}
-      <div className="menu-search">
-        <Input
-          name="search"
-          placeholder="Search food..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-      </div>
-
-      {/* Categories */}
       <div className="menu-categories">
         <button
-          className={`menu-chip ${
-            selectedCategory === null ? "active" : ""
-          }`}
+          className={`menu-chip ${selectedCategory === null ? "active" : ""}`}
           onClick={() => setSelectedCategory(null)}
         >
           All
@@ -82,28 +68,12 @@ function Menu() {
         ))}
       </div>
 
-      {/* Loading */}
-      {loading && (
-        <p className="menu-status">
-          Loading menu...
-        </p>
-      )}
-
-      {/* Error */}
-      {!loading && error && (
-        <p className="menu-error">
-          {error}
-        </p>
-      )}
-
-      {/* Empty */}
+      {loading && <p className="menu-status">Loading menu...</p>}
+      {!loading && error && <p className="menu-error">{error}</p>}
       {!loading && !error && items.length === 0 && (
-        <p className="menu-status">
-          No food items found.
-        </p>
+        <p className="menu-status">No food items found.</p>
       )}
 
-      {/* Food Items */}
       {!loading && !error && items.length > 0 && (
         <div className="menu-grid">
           {items.map((item) => (
@@ -113,39 +83,41 @@ function Menu() {
               className="menu-item-link"
             >
               <Card className="menu-item-card">
+                <div className="menu-item-image-wrap">
+                  {item.image_url && (
+                    <img
+                      src={item.image_url}
+                      alt={item.name}
+                      className="menu-item-image"
+                    />
+                  )}
 
-                {item.image_url && (
-                  <img
-                    src={item.image_url}
-                    alt={item.name}
-                    className="menu-item-image"
-                  />
-                )}
+                  {item.available && (
+                    <button
+                      type="button"
+                      className="menu-item-add-btn"
+                      onClick={(e) => handleAddToCart(e, item)}
+                    >
+                      Add to Cart
+                    </button>
+                  )}
+                </div>
 
                 <div className="menu-item-content">
                   <h3>{item.name}</h3>
-
-                  {item.description && (
-                    <p>{item.description}</p>
-                  )}
-
+                  {item.description && <p>{item.description}</p>}
                   <div className="menu-item-footer">
                     <strong>₹{item.price}</strong>
-
                     {!item.available && (
-                      <Badge variant="warning">
-                        Unavailable
-                      </Badge>
+                      <Badge variant="warning">Unavailable</Badge>
                     )}
                   </div>
                 </div>
-
               </Card>
             </Link>
           ))}
         </div>
       )}
-
     </div>
   );
 }

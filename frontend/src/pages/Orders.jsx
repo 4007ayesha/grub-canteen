@@ -1,8 +1,10 @@
-
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import FeedbackForm from "../components/FeedbackForm";
+import Card from "../components/ui/Card";
+import Button from "../components/ui/Button";
+import "./Orders.css";
 
 function Orders() {
   const { token } = useAuth();
@@ -15,21 +17,20 @@ function Orders() {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await fetch(
-          "http://localhost:8000/orders/my",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await fetch("http://localhost:8000/orders/my", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         if (!response.ok) {
           throw new Error("Unable to load orders");
         }
 
         const data = await response.json();
-        setOrders(data);
+        // Most recent first — using order id as a stand-in for recency
+        const sorted = [...data].sort((a, b) => b.id - a.id);
+        setOrders(sorted);
       } catch (error) {
         setError("Unable to load your orders.");
       }
@@ -49,40 +50,25 @@ function Orders() {
 
   if (!token) {
     return (
-      <div style={{ padding: "30px" }}>
+      <div className="orders-page">
         <h2>Please login to view your orders.</h2>
-
-        <button onClick={() => navigate("/login")}>
-          Go to Login
-        </button>
+        <Button onClick={() => navigate("/login")}>Go to Login</Button>
       </div>
     );
   }
 
   return (
-    <div style={{ padding: "30px" }}>
-      <h1>My Orders</h1>
+    <div className="orders-page">
+      <p className="orders-subtitle">Track your orders here.</p>
 
-      {error && (
-        <p style={{ color: "red" }}>
-          {error}
-        </p>
-      )}
+      {error && <p className="orders-error">{error}</p>}
 
       {!error && orders.length === 0 && (
-        <p>You haven't placed any orders yet.</p>
+        <p className="orders-empty">You haven't placed any orders yet.</p>
       )}
 
       {orders.map((order) => (
-        <div
-          key={order.id}
-          style={{
-            border: "1px solid #ddd",
-            borderRadius: "10px",
-            padding: "20px",
-            marginTop: "20px",
-          }}
-        >
+        <Card key={order.id} className="order-card">
           <h2>Order #{order.id}</h2>
 
           <p>
@@ -94,44 +80,31 @@ function Orders() {
           </p>
 
           <p>
-            <strong>Status:</strong>{" "}
-            {order.status}
+            <strong>Status:</strong> {order.status}
           </p>
 
-          <button
-            onClick={() =>
-              navigate(`/order-tracking/${order.id}`)
-            }
-          >
+          <Button onClick={() => navigate(`/order-tracking/${order.id}`)}>
             Track Order
-          </button>
+          </Button>
 
           {order.status === "collected" && (
             <>
               {submittedFeedback[order.id] ? (
-                <p
-                  style={{
-                    marginTop: "15px",
-                    fontWeight: "bold",
-                  }}
-                >
+                <p className="orders-feedback-thanks">
                   Thank you for your feedback! ❤️
                 </p>
               ) : (
                 <FeedbackForm
                   orderId={order.id}
-                  onSubmitted={() =>
-                    handleFeedbackSubmitted(order.id)
-                  }
+                  onSubmitted={() => handleFeedbackSubmitted(order.id)}
                 />
               )}
             </>
           )}
-        </div>
+        </Card>
       ))}
     </div>
   );
 }
 
 export default Orders;
-

@@ -1,0 +1,38 @@
+.orders-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.orders-subtitle {
+  margin: 0 0 var(--space-sm);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.orders-error {
+  color: var(--color-error);
+}
+
+.orders-empty {
+  color: var(--color-text-muted);
+}
+
+.order-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-lg);
+}
+
+.order-card h2 {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  color: var(--color-text);
+}
+
+.orders-feedback-thanks {
+  margin-top: var(--space-sm);
+  font-weight: 600;
+  color: var(--color-success);
+}

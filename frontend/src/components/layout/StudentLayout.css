@@ -1,0 +1,127 @@
+.student-layout {
+  display: flex;
+  min-height: 100vh;
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-family);
+}
+
+/* Sidebar */
+.student-sidebar {
+  width: 250px;
+  min-height: 100vh;
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  padding: var(--space-xl);
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.student-sidebar-title {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  color: var(--color-primary-dark);
+  line-height: 1.2;
+}
+
+.student-sidebar-subtitle {
+  margin: var(--space-xs) 0 var(--space-xl);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* Navigation */
+.student-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.student-nav a,
+.student-nav-button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  text-decoration: none;
+  color: var(--color-text);
+  padding: 12px var(--space-md);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-family: var(--font-family);
+  font-size: var(--font-size-md);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.student-nav a:hover,
+.student-nav-button:hover {
+  background: var(--color-background);
+}
+
+.student-nav a.active {
+  background: var(--color-primary);
+  color: white;
+}
+
+/* Main content */
+.student-content {
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-xl) var(--space-2xl) var(--space-2xl);
+  box-sizing: border-box;
+}
+
+/* Topbar: title + search icon + bell */
+.student-topbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+  position: relative;
+  z-index: 1100;
+}
+
+.student-page-title {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.student-topbar-spacer {
+  flex: 1;
+}
+
+.student-topbar-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface);
+  border: none;
+  color: var(--color-text);
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(63, 58, 58, 0.1);
+  flex-shrink: 0;
+}
+
+.student-topbar-icon:hover {
+  background: var(--color-background);
+}
+
+.student-bell-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-surface);
+  box-shadow: 0 2px 6px rgba(63, 58, 58, 0.1);
+  flex-shrink: 0;
+}
