@@ -11,7 +11,7 @@ from fastapi import (
 from sqlalchemy.orm import Session
 
 from backend.database import get_db
-from backend.models import Order, OrderItem, Payment
+from backend.models import Order, OrderItem, Payment, MenuItem, Inventory
 from backend.schemas import OrderCreate, OrderOut
 from backend.dependencies import get_current_user
 from backend.websocket_manager import manager
@@ -57,7 +57,51 @@ def create_order(
             detail="Payment not successful, cannot create order",
         )
 
-    # Create the main order
+    # ========================================================
+    # CHECK MENU ITEM AVAILABILITY AND STOCK
+    # ========================================================
+
+    for item in order.items:
+
+        # Find the menu item
+        menu_item = (
+            db.query(MenuItem)
+            .filter(MenuItem.id == item.menu_item_id)
+            .first()
+        )
+
+        # Menu item does not exist
+        if not menu_item:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Menu item {item.menu_item_id} not found",
+            )
+
+        # Admin has marked the item as unavailable
+        if not menu_item.available:
+            raise HTTPException(
+                status_code=400,
+                detail=f"{menu_item.name} is currently unavailable",
+            )
+
+        # Find inventory record
+        inventory = (
+            db.query(Inventory)
+            .filter(Inventory.menu_item_id == item.menu_item_id)
+            .first()
+        )
+
+        # Check whether enough stock is available
+        if inventory and inventory.current_stock < item.quantity:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Not enough stock for {menu_item.name}",
+            )
+
+    # ========================================================
+    # CREATE THE MAIN ORDER
+    # ========================================================
+
     new_order = Order(
         user_id=int(user["sub"]),
         token_number=generate_token(),

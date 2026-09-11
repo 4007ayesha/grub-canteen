@@ -1,4 +1,3 @@
-
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
 from datetime import date
@@ -30,7 +29,7 @@ class CategoryOut(BaseModel):
 class MenuItemCreate(BaseModel):
     name: str
     description: Optional[str] = None
-    price: float
+    price: float = Field(gt=0)
     category_id: int
     available: bool = True
     image_url: Optional[str] = None

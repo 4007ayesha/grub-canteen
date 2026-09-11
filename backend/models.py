@@ -1,4 +1,3 @@
-
 from sqlalchemy import (
     Column,
     Integer,
@@ -244,8 +243,6 @@ class WasteRecord(Base):
         Integer,
         nullable=False,
     )
-
-
 
 
 # ============================================================
