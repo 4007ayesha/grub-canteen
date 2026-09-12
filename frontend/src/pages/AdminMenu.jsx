@@ -80,16 +80,23 @@ function AdminMenu() {
   }
 
   async function handleSubmit(e) {
-    e.preventDefault();
-    setFormError("");
+  e.preventDefault();
+  setFormError("");
 
-    const payload = {
-      ...form,
-      price: parseFloat(form.price),
-      category_id: parseInt(form.category_id, 10),
-    };
+  const parsedPrice = parseFloat(form.price);
 
-    try {
+  if (isNaN(parsedPrice) || parsedPrice <= 0) {
+    setFormError("Price must be a number greater than 0.");
+    return;
+  }
+
+  const payload = {
+    ...form,
+    price: parsedPrice,
+    category_id: parseInt(form.category_id, 10),
+  };
+
+  try {
       if (editingId) {
         await updateMenuItem(editingId, payload, token);
       } else {
@@ -171,14 +178,15 @@ function AdminMenu() {
             }
           />
           <Input
-            label="Price"
-            name="price"
-            type="number"
-            step="0.01"
-            value={form.price}
-            onChange={(e) => setForm({ ...form, price: e.target.value })}
-            required
-          />
+  label="Price"
+  name="price"
+  type="number"
+  step="0.01"
+  min="0.01"
+  value={form.price}
+  onChange={(e) => setForm({ ...form, price: e.target.value })}
+  required
+/>
 
           <label className="admin-menu-label">
             Category

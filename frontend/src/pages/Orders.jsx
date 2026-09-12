@@ -11,30 +11,36 @@ function Orders() {
   const navigate = useNavigate();
 
   const [orders, setOrders] = useState([]);
-  const [error, setError] = useState("");
-  const [submittedFeedback, setSubmittedFeedback] = useState({});
+const [error, setError] = useState("");
+const [loading, setLoading] = useState(true);
+const [submittedFeedback, setSubmittedFeedback] = useState({});
 
   useEffect(() => {
     const fetchOrders = async () => {
-      try {
-        const response = await fetch("http://localhost:8000/orders/my", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+  setLoading(true);
+  setError("");
 
-        if (!response.ok) {
-          throw new Error("Unable to load orders");
-        }
+  try {
+    const response = await fetch("http://localhost:8000/orders/my", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-        const data = await response.json();
-        // Most recent first — using order id as a stand-in for recency
-        const sorted = [...data].sort((a, b) => b.id - a.id);
-        setOrders(sorted);
-      } catch (error) {
-        setError("Unable to load your orders.");
-      }
-    };
+    if (!response.ok) {
+      throw new Error("Unable to load orders");
+    }
+
+    const data = await response.json();
+    // Most recent first — using order id as a stand-in for recency
+    const sorted = [...data].sort((a, b) => b.id - a.id);
+    setOrders(sorted);
+  } catch (error) {
+    setError("Unable to load your orders.");
+  } finally {
+    setLoading(false);
+  }
+};
 
     if (token) {
       fetchOrders();
@@ -61,13 +67,17 @@ function Orders() {
     <div className="orders-page">
       <p className="orders-subtitle">Track your orders here.</p>
 
-      {error && <p className="orders-error">{error}</p>}
+      {loading && <p className="orders-status">Loading your orders...</p>}
 
-      {!error && orders.length === 0 && (
-        <p className="orders-empty">You haven't placed any orders yet.</p>
-      )}
+{!loading && error && <p className="orders-error">{error}</p>}
 
-      {orders.map((order) => (
+{!loading && !error && orders.length === 0 && (
+  <p className="orders-empty">You haven't placed any orders yet.</p>
+)}
+
+{!loading &&
+  !error &&
+  orders.map((order) => (
         <Card key={order.id} className="order-card">
           <h2>Order #{order.id}</h2>
 
