@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from backend.database import get_db
-from backend.models import MenuItem, Category
+from backend.models import MenuItem, Category, Inventory
 from backend.schemas import (
     MenuItemOut,
     MenuItemCreate,
@@ -20,15 +20,23 @@ router = APIRouter(
 # -------------------------
 # GET all categories
 # -------------------------
-@router.get("/categories", response_model=list[CategoryOut])
-def list_categories(db: Session = Depends(get_db)):
+@router.get(
+    "/categories",
+    response_model=list[CategoryOut]
+)
+def list_categories(
+    db: Session = Depends(get_db)
+):
     return db.query(Category).all()
 
 
 # -------------------------
 # GET menu items
 # -------------------------
-@router.get("/items", response_model=list[MenuItemOut])
+@router.get(
+    "/items",
+    response_model=list[MenuItemOut]
+)
 def list_items(
     category_id: int | None = None,
     search: str | None = None,
@@ -37,20 +45,52 @@ def list_items(
     query = db.query(MenuItem)
 
     if category_id is not None:
-        query = query.filter(MenuItem.category_id == category_id)
+        query = query.filter(
+            MenuItem.category_id == category_id
+        )
 
     if search:
         query = query.filter(
             MenuItem.name.ilike(f"%{search}%")
         )
 
-    return query.all()
+    menu_items = query.all()
+
+    result = []
+
+    for item in menu_items:
+        inventory = (
+            db.query(Inventory)
+            .filter(
+                Inventory.menu_item_id == item.id
+            )
+            .first()
+        )
+
+        result.append({
+            "id": item.id,
+            "name": item.name,
+            "description": item.description,
+            "price": item.price,
+            "category_id": item.category_id,
+            "available": item.available,
+            "image_url": item.image_url,
+            "current_stock": (
+                inventory.current_stock
+                if inventory
+                else 0
+            )
+        })
+
+    return result
 
 
 # -------------------------
 # Admin check
 # -------------------------
-def admin_only(current_user=Depends(get_current_user)):
+def admin_only(
+    current_user=Depends(get_current_user)
+):
     if current_user.get("role") != "admin":
         raise HTTPException(
             status_code=403,
@@ -85,7 +125,16 @@ def create_item(
     db.commit()
     db.refresh(new_item)
 
-    return new_item
+    return {
+        "id": new_item.id,
+        "name": new_item.name,
+        "description": new_item.description,
+        "price": new_item.price,
+        "category_id": new_item.category_id,
+        "available": new_item.available,
+        "image_url": new_item.image_url,
+        "current_stock": 0
+    }
 
 
 # -------------------------
@@ -101,9 +150,11 @@ def update_item(
     db: Session = Depends(get_db),
     current_user=Depends(admin_only)
 ):
-    existing_item = db.query(MenuItem).filter(
-        MenuItem.id == item_id
-    ).first()
+    existing_item = (
+        db.query(MenuItem)
+        .filter(MenuItem.id == item_id)
+        .first()
+    )
 
     if not existing_item:
         raise HTTPException(
@@ -121,21 +172,46 @@ def update_item(
     db.commit()
     db.refresh(existing_item)
 
-    return existing_item
+    inventory = (
+        db.query(Inventory)
+        .filter(
+            Inventory.menu_item_id == existing_item.id
+        )
+        .first()
+    )
+
+    return {
+        "id": existing_item.id,
+        "name": existing_item.name,
+        "description": existing_item.description,
+        "price": existing_item.price,
+        "category_id": existing_item.category_id,
+        "available": existing_item.available,
+        "image_url": existing_item.image_url,
+        "current_stock": (
+            inventory.current_stock
+            if inventory
+            else 0
+        )
+    }
 
 
 # -------------------------
 # DELETE menu item
 # -------------------------
-@router.delete("/items/{item_id}")
+@router.delete(
+    "/items/{item_id}"
+)
 def delete_item(
     item_id: int,
     db: Session = Depends(get_db),
     current_user=Depends(admin_only)
 ):
-    existing_item = db.query(MenuItem).filter(
-        MenuItem.id == item_id
-    ).first()
+    existing_item = (
+        db.query(MenuItem)
+        .filter(MenuItem.id == item_id)
+        .first()
+    )
 
     if not existing_item:
         raise HTTPException(
@@ -162,9 +238,11 @@ def get_item(
     item_id: int,
     db: Session = Depends(get_db)
 ):
-    item = db.query(MenuItem).filter(
-        MenuItem.id == item_id
-    ).first()
+    item = (
+        db.query(MenuItem)
+        .filter(MenuItem.id == item_id)
+        .first()
+    )
 
     if not item:
         raise HTTPException(
@@ -172,4 +250,25 @@ def get_item(
             detail="Item not found"
         )
 
-    return item
+    inventory = (
+        db.query(Inventory)
+        .filter(
+            Inventory.menu_item_id == item.id
+        )
+        .first()
+    )
+
+    return {
+        "id": item.id,
+        "name": item.name,
+        "description": item.description,
+        "price": item.price,
+        "category_id": item.category_id,
+        "available": item.available,
+        "image_url": item.image_url,
+        "current_stock": (
+            inventory.current_stock
+            if inventory
+            else 0
+        )
+    }

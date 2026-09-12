@@ -37,6 +37,7 @@ class MenuItemCreate(BaseModel):
 
 class MenuItemOut(MenuItemCreate):
     id: int
+    current_stock: Optional[int] = None
 
     class Config:
         from_attributes = True
@@ -90,6 +91,8 @@ class OrderOut(BaseModel):
     status: str
     total_amount: float
     items: list[OrderItemOut]
+    payment_method: Optional[str] = None
+    payment_status: Optional[str] = None
 
     class Config:
         from_attributes = True
