@@ -66,14 +66,20 @@ function App() {
         {/* Student Pages (Sidebar)   */}
         {/* ========================= */}
 
-        <Route element={<StudentLayout />}>
-          <Route path="/menu" element={<Menu />} />
-          <Route path="/orders" element={<Orders />} />
-          <Route path="/food/:id" element={<FoodDetails />} />
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/order-confirmation" element={<OrderConfirmation />} />
-          <Route path="/order-tracking/:orderId" element={<OrderTracking />} />
-        </Route>
+        <Route
+  element={
+    <ProtectedRoute>
+      <StudentLayout />
+    </ProtectedRoute>
+  }
+>
+  <Route path="/menu" element={<Menu />} />
+  <Route path="/orders" element={<Orders />} />
+  <Route path="/food/:id" element={<FoodDetails />} />
+  <Route path="/checkout" element={<Checkout />} />
+  <Route path="/order-confirmation" element={<OrderConfirmation />} />
+  <Route path="/order-tracking/:orderId" element={<OrderTracking />} />
+</Route>
 
         {/* ========================= */}
         {/* Admin Pages */}

@@ -17,7 +17,9 @@
 .orders-empty {
   color: var(--color-text-muted);
 }
-
+.orders-status {
+  color: var(--color-text-muted);
+}
 .order-card {
   display: flex;
   flex-direction: column;
