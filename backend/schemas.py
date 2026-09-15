@@ -3,6 +3,10 @@ from typing import Optional
 from datetime import date
 
 
+# -------------------------
+# Authentication Schemas
+# -------------------------
+
 class UserCreate(BaseModel):
     name: str
     email: EmailStr
@@ -48,8 +52,8 @@ class MenuItemOut(MenuItemCreate):
 # -------------------------
 
 class PaymentCreate(BaseModel):
-    amount: float
-    method: str
+    amount: float = Field(gt=0)
+    method: str = Field(min_length=1)
 
 
 class PaymentOut(BaseModel):
@@ -68,13 +72,13 @@ class PaymentOut(BaseModel):
 
 class OrderItemCreate(BaseModel):
     menu_item_id: int
-    quantity: int
-    price_at_order: float
+    quantity: int = Field(gt=0)
+    price_at_order: float = Field(gt=0)
 
 
 class OrderCreate(BaseModel):
-    items: list[OrderItemCreate]
-    total_amount: float
+    items: list[OrderItemCreate] = Field(min_length=1)
+    total_amount: float = Field(gt=0)
     payment_id: int
 
 
@@ -133,8 +137,8 @@ class NotificationOut(BaseModel):
 # -------------------------
 
 class InventoryUpdate(BaseModel):
-    current_stock: int
-    min_threshold: int = 10
+    current_stock: int = Field(ge=0)
+    min_threshold: int = Field(default=10, ge=0)
 
 
 class InventoryOut(BaseModel):
@@ -154,9 +158,9 @@ class InventoryOut(BaseModel):
 class WasteRecordCreate(BaseModel):
     menu_item_id: int
     date: date
-    prepared_qty: int
-    sold_qty: int
-    wasted_qty: int
+    prepared_qty: int = Field(ge=0)
+    sold_qty: int = Field(ge=0)
+    wasted_qty: int = Field(ge=0)
 
 
 class WasteRecordOut(WasteRecordCreate):
@@ -173,9 +177,9 @@ class WasteRecordOut(WasteRecordCreate):
 class PredictionRequest(BaseModel):
     menu_item_id: int
     date: date
-    day_of_week: int
-    previous_day_sales: int
-    seven_day_avg: float
+    day_of_week: int = Field(ge=0, le=6)
+    previous_day_sales: int = Field(ge=0)
+    seven_day_avg: float = Field(ge=0)
     is_holiday: bool
     is_college_event: bool
 

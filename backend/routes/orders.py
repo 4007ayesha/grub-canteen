@@ -1,5 +1,6 @@
 import random
 import string
+from decimal import Decimal
 
 from fastapi import (
     APIRouter,
@@ -30,201 +31,433 @@ router = APIRouter(
 )
 
 
+# ============================================================
+# HELPER FUNCTIONS
+# ============================================================
+
 def generate_token():
+    """
+    Generates a token such as T4821.
+    """
     return "T" + "".join(
-        random.choices(string.digits, k=4)
+        random.choices(
+            string.digits,
+            k=4,
+        )
     )
 
 
-def order_response(order, payment):
+def get_payment_for_order(
+    order,
+    db: Session,
+):
+    """
+    Fetch payment information for an order.
+    """
+    payment_id = getattr(
+        order,
+        "payment_id",
+        None,
+    )
+
+    if not payment_id:
+        return None
+
+    return (
+        db.query(Payment)
+        .filter(
+            Payment.id == payment_id
+        )
+        .first()
+    )
+
+
+def order_response(
+    order,
+    payment=None,
+):
+    """
+    Converts an Order object into the response format.
+    """
     return {
         "id": order.id,
         "token_number": order.token_number,
         "status": order.status,
         "total_amount": order.total_amount,
         "items": order.items,
-        "payment_method": payment.method if payment else None,
-        "payment_status": payment.status if payment else None,
+        "payment_method": (
+            payment.method
+            if payment
+            else None
+        ),
+        "payment_status": (
+            payment.status
+            if payment
+            else None
+        ),
     }
+
+
+def load_order(
+    db: Session,
+    order_id: int,
+):
+    """
+    Loads an order together with its order items.
+    """
+    return (
+        db.query(Order)
+        .options(
+            joinedload(Order.items)
+        )
+        .filter(
+            Order.id == order_id
+        )
+        .first()
+    )
 
 
 # ============================================================
 # CREATE ORDER
 # ============================================================
 
-@router.post("/", response_model=OrderOut)
+@router.post(
+    "/",
+    response_model=OrderOut,
+)
 def create_order(
     order: OrderCreate,
     db: Session = Depends(get_db),
     user=Depends(get_current_user),
 ):
-    # --------------------------------------------------------
-    # Check payment
-    # --------------------------------------------------------
+    user_id = int(user["sub"])
 
-    payment = (
-        db.query(Payment)
-        .filter(Payment.id == order.payment_id)
-        .first()
-    )
+    try:
+        # ----------------------------------------------------
+        # Validate order items
+        # ----------------------------------------------------
 
-    if not payment:
-        raise HTTPException(
-            status_code=404,
-            detail="Payment not found",
-        )
-
-    # Online payments must be successful.
-    # Cash payments may remain pending.
-    if (
-        payment.method.lower() != "cash"
-        and payment.status != "success"
-    ):
-        raise HTTPException(
-            status_code=400,
-            detail="Payment not successful, cannot create order",
-        )
-
-    # --------------------------------------------------------
-    # Validate order
-    # --------------------------------------------------------
-
-    if not order.items:
-        raise HTTPException(
-            status_code=400,
-            detail="Order must contain at least one item",
-        )
-
-    inventory_records = []
-
-    for item in order.items:
-
-        if item.quantity <= 0:
-            raise HTTPException(
-                status_code=400,
-                detail="Quantity must be greater than zero",
-            )
-
-        menu_item = (
-            db.query(MenuItem)
-            .filter(MenuItem.id == item.menu_item_id)
-            .first()
-        )
-
-        if not menu_item:
-            raise HTTPException(
-                status_code=404,
-                detail=f"Menu item {item.menu_item_id} not found",
-            )
-
-        if not menu_item.available:
-            raise HTTPException(
-                status_code=400,
-                detail=f"{menu_item.name} is currently unavailable",
-            )
-
-        inventory = (
-            db.query(Inventory)
-            .filter(
-                Inventory.menu_item_id == item.menu_item_id
-            )
-            .first()
-        )
-
-        if not inventory:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Stock not configured for {menu_item.name}",
-            )
-
-        if inventory.current_stock < item.quantity:
+        if not order.items:
             raise HTTPException(
                 status_code=400,
                 detail=(
-                    f"Not enough stock for {menu_item.name}. "
-                    f"Available stock: {inventory.current_stock}"
+                    "Order must contain "
+                    "at least one item"
                 ),
             )
 
-        inventory_records.append(
-            (inventory, item.quantity)
+        # Prevent duplicate menu items.
+        menu_item_ids = [
+            item.menu_item_id
+            for item in order.items
+        ]
+
+        if len(menu_item_ids) != len(
+            set(menu_item_ids)
+        ):
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    "The same menu item cannot "
+                    "be added more than once. "
+                    "Update its quantity instead."
+                ),
+            )
+
+        # ----------------------------------------------------
+        # Validate payment
+        # ----------------------------------------------------
+
+        payment = (
+            db.query(Payment)
+            .filter(
+                Payment.id == order.payment_id
+            )
+            .first()
         )
 
-    # --------------------------------------------------------
-    # Create order
-    # --------------------------------------------------------
+        if not payment:
+            raise HTTPException(
+                status_code=404,
+                detail="Payment not found",
+            )
 
-    new_order = Order(
-        user_id=int(user["sub"]),
-        token_number=generate_token(),
-        total_amount=order.total_amount,
-        payment_id=order.payment_id,
-    )
-
-    db.add(new_order)
-    db.flush()
-
-    # --------------------------------------------------------
-    # Create order items
-    # --------------------------------------------------------
-
-    for item in order.items:
-
-        order_item = OrderItem(
-            order_id=new_order.id,
-            menu_item_id=item.menu_item_id,
-            quantity=item.quantity,
-            price_at_order=item.price_at_order,
+        # Check payment ownership only if
+        # the Payment model contains user_id.
+        payment_user_id = getattr(
+            payment,
+            "user_id",
+            None,
         )
 
-        db.add(order_item)
+        if (
+            payment_user_id is not None
+            and int(payment_user_id) != user_id
+        ):
+            raise HTTPException(
+                status_code=403,
+                detail=(
+                    "You are not authorized "
+                    "to use this payment"
+                ),
+            )
 
-    # --------------------------------------------------------
-    # Deduct stock
-    # --------------------------------------------------------
+        payment_method = (
+            payment.method.lower()
+            if payment.method
+            else ""
+        )
 
-    for inventory, quantity in inventory_records:
-        inventory.current_stock -= quantity
+        payment_status = (
+            payment.status.lower()
+            if payment.status
+            else ""
+        )
 
-    db.commit()
-    db.refresh(new_order)
+        # Online payments must be successful.
+        # Cash payments can remain pending.
+        if (
+            payment_method != "cash"
+            and payment_status != "success"
+        ):
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    "Online payment must be "
+                    "successful before creating "
+                    "an order"
+                ),
+            )
 
-    # Load order items before returning
-    db.refresh(new_order)
+        # ----------------------------------------------------
+        # Validate menu items and stock
+        # ----------------------------------------------------
 
-    return order_response(new_order, payment)
+        inventory_records = []
+
+        calculated_total = Decimal(
+            "0.00"
+        )
+
+        for item in order.items:
+
+            if item.quantity <= 0:
+                raise HTTPException(
+                    status_code=400,
+                    detail=(
+                        "Quantity must be "
+                        "greater than zero"
+                    ),
+                )
+
+            menu_item = (
+                db.query(MenuItem)
+                .filter(
+                    MenuItem.id
+                    == item.menu_item_id
+                )
+                .first()
+            )
+
+            if not menu_item:
+                raise HTTPException(
+                    status_code=404,
+                    detail=(
+                        f"Menu item "
+                        f"{item.menu_item_id} "
+                        "not found"
+                    ),
+                )
+
+            if not menu_item.available:
+                raise HTTPException(
+                    status_code=400,
+                    detail=(
+                        f"{menu_item.name} "
+                        "is currently unavailable"
+                    ),
+                )
+
+            inventory = (
+                db.query(Inventory)
+                .filter(
+                    Inventory.menu_item_id
+                    == item.menu_item_id
+                )
+                .first()
+            )
+
+            if not inventory:
+                raise HTTPException(
+                    status_code=400,
+                    detail=(
+                        f"Stock not configured "
+                        f"for {menu_item.name}"
+                    ),
+                )
+
+            if (
+                inventory.current_stock
+                < item.quantity
+            ):
+                raise HTTPException(
+                    status_code=400,
+                    detail=(
+                        f"Not enough stock for "
+                        f"{menu_item.name}. "
+                        f"Available stock: "
+                        f"{inventory.current_stock}"
+                    ),
+                )
+
+            # Use the actual price from the database.
+            actual_price = Decimal(
+                str(menu_item.price)
+            )
+
+            calculated_total += (
+                actual_price * item.quantity
+            )
+
+            inventory_records.append(
+                {
+                    "inventory": inventory,
+                    "menu_item": menu_item,
+                    "quantity": item.quantity,
+                    "price": actual_price,
+                }
+            )
+
+        # ----------------------------------------------------
+        # Create order
+        # ----------------------------------------------------
+
+        new_order = Order(
+            user_id=user_id,
+            token_number=generate_token(),
+            total_amount=calculated_total,
+            payment_id=order.payment_id,
+        )
+
+        db.add(new_order)
+        db.flush()
+
+        # ----------------------------------------------------
+        # Create order items
+        # ----------------------------------------------------
+
+        for record in inventory_records:
+
+            menu_item = record["menu_item"]
+
+            order_item = OrderItem(
+                order_id=new_order.id,
+                menu_item_id=menu_item.id,
+                quantity=record["quantity"],
+                price_at_order=record["price"],
+            )
+
+            db.add(order_item)
+
+        # ----------------------------------------------------
+        # Deduct stock
+        # ----------------------------------------------------
+
+        for record in inventory_records:
+
+            inventory = record["inventory"]
+            menu_item = record["menu_item"]
+            quantity = record["quantity"]
+
+            inventory.current_stock -= quantity
+
+            # If stock becomes zero,
+            # mark the menu item unavailable.
+            if inventory.current_stock == 0:
+                menu_item.available = False
+
+        # ----------------------------------------------------
+        # Save order
+        # ----------------------------------------------------
+
+        db.commit()
+
+        saved_order = (
+            db.query(Order)
+            .options(
+                joinedload(Order.items)
+            )
+            .filter(
+                Order.id == new_order.id
+            )
+            .first()
+        )
+
+        return order_response(
+            saved_order,
+            payment,
+        )
+
+    except HTTPException:
+        db.rollback()
+        raise
+
+    except Exception as error:
+        db.rollback()
+
+        print(
+            "Error while creating order:",
+            error,
+        )
+
+        raise HTTPException(
+            status_code=500,
+            detail="Unable to create order",
+        )
 
 
 # ============================================================
 # GET MY ORDERS
 # ============================================================
 
-@router.get("/my", response_model=list[OrderOut])
+@router.get(
+    "/my",
+    response_model=list[OrderOut],
+)
 def my_orders(
     db: Session = Depends(get_db),
     user=Depends(get_current_user),
 ):
+    user_id = int(user["sub"])
+
     orders = (
         db.query(Order)
-        .filter(Order.user_id == int(user["sub"]))
-        .order_by(Order.id.desc())
+        .options(
+            joinedload(Order.items)
+        )
+        .filter(
+            Order.user_id == user_id
+        )
+        .order_by(
+            Order.id.desc()
+        )
         .all()
     )
 
     result = []
 
     for order in orders:
-        payment = None
 
-        if getattr(order, "payment_id", None):
-            payment = (
-                db.query(Payment)
-                .filter(Payment.id == order.payment_id)
-                .first()
-            )
+        payment = get_payment_for_order(
+            order,
+            db,
+        )
 
         result.append(
-            order_response(order, payment)
+            order_response(
+                order,
+                payment,
+            )
         )
 
     return result
@@ -234,7 +467,10 @@ def my_orders(
 # ADMIN VIEW / FILTER ORDERS
 # ============================================================
 
-@router.get("/admin/all", response_model=list[OrderOut])
+@router.get(
+    "/admin/all",
+    response_model=list[OrderOut],
+)
 def admin_all_orders(
     status: str = None,
     db: Session = Depends(get_db),
@@ -248,7 +484,12 @@ def admin_all_orders(
 
     query = (
         db.query(Order)
-        .order_by(Order.created_at.desc())
+        .options(
+            joinedload(Order.items)
+        )
+        .order_by(
+            Order.created_at.desc()
+        )
     )
 
     if status:
@@ -261,17 +502,17 @@ def admin_all_orders(
     result = []
 
     for order in orders:
-        payment = None
 
-        if getattr(order, "payment_id", None):
-            payment = (
-                db.query(Payment)
-                .filter(Payment.id == order.payment_id)
-                .first()
-            )
+        payment = get_payment_for_order(
+            order,
+            db,
+        )
 
         result.append(
-            order_response(order, payment)
+            order_response(
+                order,
+                payment,
+            )
         )
 
     return result
@@ -281,16 +522,18 @@ def admin_all_orders(
 # GET SINGLE ORDER
 # ============================================================
 
-@router.get("/{order_id}", response_model=OrderOut)
+@router.get(
+    "/{order_id}",
+    response_model=OrderOut,
+)
 def get_order(
     order_id: int,
     db: Session = Depends(get_db),
     user=Depends(get_current_user),
 ):
-    order = (
-        db.query(Order)
-        .filter(Order.id == order_id)
-        .first()
+    order = load_order(
+        db,
+        order_id,
     )
 
     if not order:
@@ -299,32 +542,38 @@ def get_order(
             detail="Order not found",
         )
 
+    user_id = int(user["sub"])
+
     if (
         user["role"] != "admin"
-        and order.user_id != int(user["sub"])
+        and order.user_id != user_id
     ):
         raise HTTPException(
             status_code=403,
-            detail="Not authorized to view this order",
+            detail=(
+                "Not authorized to view "
+                "this order"
+            ),
         )
 
-    payment = None
+    payment = get_payment_for_order(
+        order,
+        db,
+    )
 
-    if getattr(order, "payment_id", None):
-        payment = (
-            db.query(Payment)
-            .filter(Payment.id == order.payment_id)
-            .first()
-        )
-
-    return order_response(order, payment)
+    return order_response(
+        order,
+        payment,
+    )
 
 
 # ============================================================
 # WEBSOCKET ORDER TRACKING
 # ============================================================
 
-@router.websocket("/ws/{order_id}")
+@router.websocket(
+    "/ws/{order_id}"
+)
 async def order_status_socket(
     websocket: WebSocket,
     order_id: int,
@@ -349,7 +598,9 @@ async def order_status_socket(
 # ADMIN STATUS UPDATE
 # ============================================================
 
-@router.put("/{order_id}/status")
+@router.put(
+    "/{order_id}/status"
+)
 async def update_status(
     order_id: int,
     status: str,
@@ -369,6 +620,8 @@ async def update_status(
         "collected",
     ]
 
+    status = status.lower().strip()
+
     if status not in valid_statuses:
         raise HTTPException(
             status_code=400,
@@ -377,7 +630,9 @@ async def update_status(
 
     order = (
         db.query(Order)
-        .filter(Order.id == order_id)
+        .filter(
+            Order.id == order_id
+        )
         .first()
     )
 
@@ -388,15 +643,24 @@ async def update_status(
         )
 
     status_flow = {
-        "received": ["preparing"],
-        "preparing": ["ready"],
-        "ready": ["collected"],
+        "received": [
+            "preparing",
+        ],
+        "preparing": [
+            "ready",
+        ],
+        "ready": [
+            "collected",
+        ],
         "collected": [],
     }
 
     old_status = order.status
 
-    if status not in status_flow.get(old_status, []):
+    if status not in status_flow.get(
+        old_status,
+        [],
+    ):
         raise HTTPException(
             status_code=400,
             detail=(
@@ -405,38 +669,54 @@ async def update_status(
             ),
         )
 
-    order.status = status
+    try:
+        order.status = status
 
-    db.commit()
+        db.commit()
 
-    status_messages = {
-        "preparing": (
-            "Your order is being prepared 👨‍🍳"
-        ),
-        "ready": (
-            "Your order is ready for pickup! 🎉"
-        ),
-        "collected": (
-            "Order collected. Enjoy your meal!"
-        ),
-    }
+        status_messages = {
+            "preparing": (
+                "Your order is being prepared 👨‍🍳"
+            ),
+            "ready": (
+                "Your order is ready "
+                "for pickup! 🎉"
+            ),
+            "collected": (
+                "Order collected. "
+                "Enjoy your meal!"
+            ),
+        }
 
-    if status in status_messages:
-        create_notification(
-            db,
-            order.user_id,
-            status_messages[status],
+        if status in status_messages:
+            create_notification(
+                db,
+                order.user_id,
+                status_messages[status],
+            )
+
+        await manager.broadcast(
+            order_id,
+            {
+                "order_id": order_id,
+                "status": status,
+            },
         )
 
-    await manager.broadcast(
-        order_id,
-        {
-            "order_id": order_id,
+        return {
+            "message": "Status updated",
             "status": status,
-        },
-    )
+        }
 
-    return {
-        "message": "Status updated",
-        "status": status,
-    }
+    except Exception as error:
+        db.rollback()
+
+        print(
+            "Error while updating order status:",
+            error,
+        )
+
+        raise HTTPException(
+            status_code=500,
+            detail="Unable to update order status",
+        )

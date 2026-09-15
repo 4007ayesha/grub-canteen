@@ -12,62 +12,183 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
+
 from backend.database import Base
 
+
+# ============================================================
+# USERS
+# ============================================================
 
 class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(100), nullable=False)
-    email = Column(String(150), unique=True, nullable=False, index=True)
-    password_hash = Column(String(255), nullable=False)
-    role = Column(Enum("student", "admin"), nullable=False)
-    created_at = Column(DateTime)
 
+    name = Column(
+        String(100),
+        nullable=False,
+    )
+
+    email = Column(
+        String(150),
+        unique=True,
+        nullable=False,
+        index=True,
+    )
+
+    password_hash = Column(
+        String(255),
+        nullable=False,
+    )
+
+    role = Column(
+        Enum("student", "admin"),
+        nullable=False,
+    )
+
+    created_at = Column(
+        DateTime,
+        server_default=func.now(),
+    )
+
+
+# ============================================================
+# CATEGORIES
+# ============================================================
 
 class Category(Base):
     __tablename__ = "categories"
 
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    name = Column(String(50), unique=True, nullable=False)
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True,
+        autoincrement=True,
+    )
 
-    items = relationship("MenuItem", back_populates="category")
+    name = Column(
+        String(50),
+        unique=True,
+        nullable=False,
+    )
 
+    items = relationship(
+        "MenuItem",
+        back_populates="category",
+    )
+
+
+# ============================================================
+# MENU ITEMS
+# ============================================================
 
 class MenuItem(Base):
     __tablename__ = "menu_items"
 
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    name = Column(String(100), nullable=False)
-    description = Column(Text, nullable=True)
-    price = Column(DECIMAL(8, 2), nullable=False)
-    category_id = Column(Integer, ForeignKey("categories.id"), nullable=False)
-    available = Column(Boolean, default=True)
-    image_url = Column(String(500), nullable=True)
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True,
+        autoincrement=True,
+    )
 
-    category = relationship("Category", back_populates="items")
+    name = Column(
+        String(100),
+        nullable=False,
+    )
 
+    description = Column(
+        Text,
+        nullable=True,
+    )
+
+    price = Column(
+        DECIMAL(8, 2),
+        nullable=False,
+    )
+
+    category_id = Column(
+        Integer,
+        ForeignKey("categories.id"),
+        nullable=False,
+    )
+
+    available = Column(
+        Boolean,
+        default=True,
+        nullable=False,
+    )
+
+    image_url = Column(
+        String(500),
+        nullable=True,
+    )
+
+    category = relationship(
+        "Category",
+        back_populates="items",
+    )
+
+
+# ============================================================
+# PAYMENTS
+# ============================================================
 
 class Payment(Base):
     __tablename__ = "payments"
 
-    id = Column(Integer, primary_key=True, index=True)
-    status = Column(String(20), default="pending")
-    method = Column(String(50))
-    amount = Column(DECIMAL(8, 2), nullable=False)
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True,
+    )
+
+    status = Column(
+        String(20),
+        default="pending",
+        nullable=False,
+    )
+
+    method = Column(
+        String(50),
+        nullable=False,
+    )
+
+    amount = Column(
+        DECIMAL(8, 2),
+        nullable=False,
+    )
+
     paid_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
     )
 
 
+# ============================================================
+# ORDERS
+# ============================================================
+
 class Order(Base):
     __tablename__ = "orders"
 
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    token_number = Column(String(10), nullable=False)
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True,
+    )
+
+    user_id = Column(
+        Integer,
+        ForeignKey("users.id"),
+        nullable=False,
+    )
+
+    token_number = Column(
+        String(10),
+        nullable=False,
+    )
 
     status = Column(
         Enum(
@@ -80,7 +201,22 @@ class Order(Base):
         nullable=False,
     )
 
-    total_amount = Column(DECIMAL(8, 2), nullable=False)
+    total_amount = Column(
+        DECIMAL(8, 2),
+        nullable=False,
+    )
+
+    payment_method = Column(
+        String(20),
+        nullable=False,
+        default="Cash",
+    )
+
+    payment_status = Column(
+        String(20),
+        nullable=False,
+        default="Pending",
+    )
 
     created_at = Column(
         DateTime(timezone=True),
@@ -90,13 +226,22 @@ class Order(Base):
     items = relationship(
         "OrderItem",
         back_populates="order",
+        cascade="all, delete-orphan",
     )
 
+
+# ============================================================
+# ORDER ITEMS
+# ============================================================
 
 class OrderItem(Base):
     __tablename__ = "order_items"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True,
+    )
 
     order_id = Column(
         Integer,
@@ -110,8 +255,15 @@ class OrderItem(Base):
         nullable=False,
     )
 
-    quantity = Column(Integer, nullable=False)
-    price_at_order = Column(DECIMAL(8, 2), nullable=False)
+    quantity = Column(
+        Integer,
+        nullable=False,
+    )
+
+    price_at_order = Column(
+        DECIMAL(8, 2),
+        nullable=False,
+    )
 
     order = relationship(
         "Order",
@@ -126,7 +278,11 @@ class OrderItem(Base):
 class Feedback(Base):
     __tablename__ = "feedback"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True,
+    )
 
     order_id = Column(
         Integer,
@@ -140,8 +296,15 @@ class Feedback(Base):
         nullable=False,
     )
 
-    rating = Column(Integer, nullable=False)
-    comment = Column(Text, nullable=True)
+    rating = Column(
+        Integer,
+        nullable=False,
+    )
+
+    comment = Column(
+        Text,
+        nullable=True,
+    )
 
     created_at = Column(
         DateTime(timezone=True),
@@ -156,7 +319,11 @@ class Feedback(Base):
 class Notification(Base):
     __tablename__ = "notifications"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True,
+    )
 
     user_id = Column(
         Integer,
@@ -164,9 +331,16 @@ class Notification(Base):
         nullable=False,
     )
 
-    message = Column(String(255), nullable=False)
+    message = Column(
+        String(255),
+        nullable=False,
+    )
 
-    read = Column(Boolean, default=False)
+    read = Column(
+        Boolean,
+        default=False,
+        nullable=False,
+    )
 
     created_at = Column(
         DateTime(timezone=True),
@@ -181,7 +355,11 @@ class Notification(Base):
 class Inventory(Base):
     __tablename__ = "inventory"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True,
+    )
 
     menu_item_id = Column(
         Integer,
@@ -216,7 +394,11 @@ class Inventory(Base):
 class WasteRecord(Base):
     __tablename__ = "waste_records"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True,
+    )
 
     menu_item_id = Column(
         Integer,
