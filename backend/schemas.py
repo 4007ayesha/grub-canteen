@@ -37,6 +37,7 @@ class MenuItemCreate(BaseModel):
     category_id: int
     available: bool = True
     image_url: Optional[str] = None
+    current_stock: int = Field(ge=0, default=0)
 
 
 class MenuItemOut(MenuItemCreate):

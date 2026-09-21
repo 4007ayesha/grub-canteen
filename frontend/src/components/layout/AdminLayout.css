@@ -72,3 +72,24 @@
   padding: var(--space-2xl);
   box-sizing: border-box;
 }
+.admin-nav-logout {
+  display: block;
+  width: 100%;
+  text-align: left;
+  margin-top: var(--space-md);
+  padding: 12px var(--space-md);
+  border: none;
+  border-top: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: none;
+  color: var(--color-error);
+  font-family: var(--font-family);
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.admin-nav-logout:hover {
+  background: var(--color-background);
+}

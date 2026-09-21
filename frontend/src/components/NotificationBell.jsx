@@ -6,19 +6,18 @@ function NotificationBell() {
   const { token } = useAuth();
   const [notifications, setNotifications] = useState([]);
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const fetchNotifications = async () => {
     if (!token) return;
 
     try {
-      const response = await fetch(
-        "http://localhost:8000/notifications/",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch("http://localhost:8000/notifications/", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (!response.ok) {
         throw new Error("Unable to load notifications");
@@ -26,18 +25,24 @@ function NotificationBell() {
 
       const data = await response.json();
       setNotifications(data);
-    } catch (error) {
-      console.error("Notification error:", error);
+      setError("");
+    } catch (err) {
+      console.error("Notification error:", err);
+      setError("Unable to load notifications.");
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-  fetchNotifications();
+    setLoading(true);
+    fetchNotifications();
 
-  const intervalId = setInterval(fetchNotifications, 10000); // re-check every 10s
+    const intervalId = setInterval(fetchNotifications, 10000);
 
-  return () => clearInterval(intervalId);
-}, [token]);
+    return () => clearInterval(intervalId);
+  }, [token]);
+
   const markAsRead = async (notificationId) => {
     try {
       const response = await fetch(
@@ -61,8 +66,8 @@ function NotificationBell() {
             : notification
         )
       );
-    } catch (error) {
-      console.error("Mark notification read error:", error);
+    } catch (err) {
+      console.error("Mark notification read error:", err);
     }
   };
 
@@ -79,9 +84,7 @@ function NotificationBell() {
       >
         🔔
         {unreadCount > 0 && (
-          <span className="notification-count">
-            {unreadCount}
-          </span>
+          <span className="notification-count">{unreadCount}</span>
         )}
       </button>
 
@@ -89,9 +92,18 @@ function NotificationBell() {
         <div className="notification-dropdown">
           <h3>Notifications</h3>
 
-          {notifications.length === 0 ? (
+          {loading && <p>Loading notifications...</p>}
+
+          {!loading && error && (
+            <p className="notification-error">{error}</p>
+          )}
+
+          {!loading && !error && notifications.length === 0 && (
             <p>No notifications yet.</p>
-          ) : (
+          )}
+
+          {!loading &&
+            !error &&
             notifications.map((notification) => (
               <div
                 key={notification.id}
@@ -106,8 +118,7 @@ function NotificationBell() {
               >
                 <p>{notification.message}</p>
               </div>
-            ))
-          )}
+            ))}
         </div>
       )}
     </div>

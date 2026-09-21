@@ -206,17 +206,44 @@ const AdminOrders = () => {
               {/* Order details */}
               <div className="admin-order-details">
 
-                <div className="admin-order-detail">
-                  <span>Token</span>
-                  <strong>{order.token_number}</strong>
-                </div>
+  <div className="admin-order-detail">
+    <span>Token</span>
+    <strong>{order.token_number}</strong>
+  </div>
 
-                <div className="admin-order-detail">
-                  <span>Total</span>
-                  <strong>₹{order.total_amount}</strong>
-                </div>
+  <div className="admin-order-detail">
+    <span>Total</span>
+    <strong>₹{order.total_amount}</strong>
+  </div>
 
-              </div>
+  <div className="admin-order-detail">
+    <span>Payment Method</span>
+    <strong>
+      {order.payment_method
+        ? order.payment_method.toUpperCase()
+        : "N/A"}
+    </strong>
+  </div>
+
+  <div className="admin-order-detail">
+    <span>Payment Status</span>
+    <strong
+      className={
+        order.payment_status === "paid"
+          ? "payment-status-paid"
+          : order.payment_status === "pending"
+          ? "payment-status-pending"
+          : ""
+      }
+    >
+      {order.payment_status
+        ? order.payment_status.charAt(0).toUpperCase() +
+          order.payment_status.slice(1)
+        : "N/A"}
+    </strong>
+  </div>
+
+</div>
 
               {/* Update status */}
               <label className="admin-status-label">

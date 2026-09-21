@@ -1,9 +1,17 @@
-
 import React from "react";
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import "./AdminLayout.css";
 
 function AdminLayout() {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  function handleLogout() {
+    logout();
+    navigate("/login");
+  }
+
   return (
     <div className="admin-layout">
       <aside className="admin-sidebar">
@@ -16,6 +24,14 @@ function AdminLayout() {
           <NavLink to="/admin/orders">Orders</NavLink>
           <NavLink to="/admin/inventory">Inventory</NavLink>
           <NavLink to="/admin/analytics">Analytics</NavLink>
+
+          <button
+            type="button"
+            className="admin-nav-logout"
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
         </nav>
       </aside>
 

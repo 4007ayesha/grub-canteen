@@ -125,6 +125,15 @@ def create_item(
     db.commit()
     db.refresh(new_item)
 
+    inventory = Inventory(
+        menu_item_id=new_item.id,
+        current_stock=item.current_stock
+    )
+
+    db.add(inventory)
+    db.commit()
+    db.refresh(inventory)
+
     return {
         "id": new_item.id,
         "name": new_item.name,
@@ -133,9 +142,8 @@ def create_item(
         "category_id": new_item.category_id,
         "available": new_item.available,
         "image_url": new_item.image_url,
-        "current_stock": 0
+        "current_stock": inventory.current_stock
     }
-
 
 # -------------------------
 # UPDATE menu item
@@ -169,9 +177,6 @@ def update_item(
     existing_item.available = item.available
     existing_item.image_url = item.image_url
 
-    db.commit()
-    db.refresh(existing_item)
-
     inventory = (
         db.query(Inventory)
         .filter(
@@ -179,6 +184,19 @@ def update_item(
         )
         .first()
     )
+
+    if inventory:
+        inventory.current_stock = item.current_stock
+    else:
+        inventory = Inventory(
+            menu_item_id=existing_item.id,
+            current_stock=item.current_stock
+        )
+        db.add(inventory)
+
+    db.commit()
+    db.refresh(existing_item)
+    db.refresh(inventory)
 
     return {
         "id": existing_item.id,
@@ -188,14 +206,8 @@ def update_item(
         "category_id": existing_item.category_id,
         "available": existing_item.available,
         "image_url": existing_item.image_url,
-        "current_stock": (
-            inventory.current_stock
-            if inventory
-            else 0
-        )
+        "current_stock": inventory.current_stock
     }
-
-
 # -------------------------
 # DELETE menu item
 # -------------------------

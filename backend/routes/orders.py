@@ -47,37 +47,12 @@ def generate_token():
     )
 
 
-def get_payment_for_order(
-    order,
-    db: Session,
-):
-    """
-    Fetch payment information for an order.
-    """
-    payment_id = getattr(
-        order,
-        "payment_id",
-        None,
-    )
-
-    if not payment_id:
-        return None
-
-    return (
-        db.query(Payment)
-        .filter(
-            Payment.id == payment_id
-        )
-        .first()
-    )
-
-
 def order_response(
     order,
-    payment=None,
 ):
     """
     Converts an Order object into the response format.
+    Payment information is stored directly on the Order.
     """
     return {
         "id": order.id,
@@ -85,16 +60,8 @@ def order_response(
         "status": order.status,
         "total_amount": order.total_amount,
         "items": order.items,
-        "payment_method": (
-            payment.method
-            if payment
-            else None
-        ),
-        "payment_status": (
-            payment.status
-            if payment
-            else None
-        ),
+        "payment_method": order.payment_method,
+        "payment_status": order.payment_status,
     }
 
 
@@ -336,7 +303,8 @@ def create_order(
             user_id=user_id,
             token_number=generate_token(),
             total_amount=calculated_total,
-            payment_id=order.payment_id,
+            payment_method=payment.method,
+            payment_status=payment.status,
         )
 
         db.add(new_order)
@@ -395,7 +363,6 @@ def create_order(
 
         return order_response(
             saved_order,
-            payment,
         )
 
     except HTTPException:
@@ -444,23 +411,10 @@ def my_orders(
         .all()
     )
 
-    result = []
-
-    for order in orders:
-
-        payment = get_payment_for_order(
-            order,
-            db,
-        )
-
-        result.append(
-            order_response(
-                order,
-                payment,
-            )
-        )
-
-    return result
+    return [
+        order_response(order)
+        for order in orders
+    ]
 
 
 # ============================================================
@@ -499,23 +453,10 @@ def admin_all_orders(
 
     orders = query.all()
 
-    result = []
-
-    for order in orders:
-
-        payment = get_payment_for_order(
-            order,
-            db,
-        )
-
-        result.append(
-            order_response(
-                order,
-                payment,
-            )
-        )
-
-    return result
+    return [
+        order_response(order)
+        for order in orders
+    ]
 
 
 # ============================================================
@@ -556,15 +497,7 @@ def get_order(
             ),
         )
 
-    payment = get_payment_for_order(
-        order,
-        db,
-    )
-
-    return order_response(
-        order,
-        payment,
-    )
+    return order_response(order)
 
 
 # ============================================================

@@ -199,3 +199,10 @@
     grid-template-columns: 1fr;
   }
 }
+.payment-status-paid {
+  color: var(--color-success);
+}
+
+.payment-status-pending {
+  color: var(--color-warning);
+}
