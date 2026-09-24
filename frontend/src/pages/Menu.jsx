@@ -83,32 +83,43 @@ function Menu() {
               className="menu-item-link"
             >
               <Card className="menu-item-card">
-                <div className="menu-item-image-wrap">
-                  {item.image_url && (
-                    <img
-                      src={item.image_url}
-                      alt={item.name}
-                      className="menu-item-image"
-                    />
-                  )}
-
-                  {item.available && (
-                    <button
-                      type="button"
-                      className="menu-item-add-btn"
-                      onClick={(e) => handleAddToCart(e, item)}
-                    >
-                      Add to Cart
-                    </button>
-                  )}
-                </div>
+                {item.image_url && (
+                  <img
+                    src={item.image_url}
+                    alt={item.name}
+                    className="menu-item-image"
+                  />
+                )}
 
                 <div className="menu-item-content">
                   <h3>{item.name}</h3>
                   {item.description && <p>{item.description}</p>}
                   <div className="menu-item-footer">
                     <strong>₹{item.price}</strong>
-                    {!item.available && (
+
+                    {item.available ? (
+                      <button
+                        type="button"
+                        className="menu-item-add-icon-btn"
+                        onClick={(e) => handleAddToCart(e, item)}
+                        aria-label={`Add ${item.name} to cart`}
+                      >
+                        <svg
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <circle cx="9" cy="21" r="1" />
+                          <circle cx="20" cy="21" r="1" />
+                          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                        </svg>
+                      </button>
+                    ) : (
                       <Badge variant="warning">Unavailable</Badge>
                     )}
                   </div>

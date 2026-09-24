@@ -52,7 +52,8 @@ function AdminAnalytics() {
   const [predictionFormError, setPredictionFormError] = useState("");
 
   const [actualInputs, setActualInputs] = useState({});
-  const [savingActualId, setSavingActualId] = useState(null);
+const [savingActualId, setSavingActualId] = useState(null);
+const [actualError, setActualError] = useState("");
 
   useEffect(() => {
     const fetchAnalytics = async () => {
@@ -221,37 +222,42 @@ function AdminAnalytics() {
   };
 
   const saveActualQty = async (predictionId) => {
-    const value = actualInputs[predictionId];
+  const value = actualInputs[predictionId];
 
-    if (value === undefined || value === "") return;
+  if (value === undefined || value === "") return;
 
-    try {
-      setSavingActualId(predictionId);
+  const numValue = Number(value);
 
-      const updated = await updatePredictionActual(
-        predictionId,
-        Number(value),
-        token
-      );
+  if (isNaN(numValue) || numValue < 0) {
+    setActualError("Actual quantity must be a valid number, 0 or greater.");
+    return;
+  }
 
-      setPredictions((current) =>
-        current.map((p) => (p.id === predictionId ? updated : p))
-      );
+  try {
+    setActualError("");
+    setSavingActualId(predictionId);
 
-      setActualInputs((current) => {
-        const copy = { ...current };
-        delete copy[predictionId];
-        return copy;
-      });
-    } catch (err) {
-      setPredictionsError(
-        err.message || "Unable to save actual quantity."
-      );
-    } finally {
-      setSavingActualId(null);
-    }
-  };
+    const updated = await updatePredictionActual(
+      predictionId,
+      numValue,
+      token
+    );
 
+    setPredictions((current) =>
+      current.map((p) => (p.id === predictionId ? updated : p))
+    );
+
+    setActualInputs((current) => {
+      const copy = { ...current };
+      delete copy[predictionId];
+      return copy;
+    });
+  } catch (err) {
+    setActualError(err.message || "Unable to save actual quantity.");
+  } finally {
+    setSavingActualId(null);
+  }
+};
   if (loading) {
     return (
       <div className="admin-analytics-page">
@@ -644,9 +650,13 @@ function AdminAnalytics() {
         )}
 
         <div className="prediction-history">
-          <h3>Prediction History</h3>
+  <h3>Prediction History</h3>
 
-          {predictionsLoading ? (
+  {actualError && (
+    <div className="analytics-error">{actualError}</div>
+  )}
+
+  {predictionsLoading ? (
             <div className="analytics-loading">Loading predictions...</div>
           ) : predictionsError ? (
             <div className="analytics-error">{predictionsError}</div>

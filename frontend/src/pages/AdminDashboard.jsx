@@ -168,15 +168,7 @@ function AdminDashboard() {
 
       </section>
 
-      {/* Logout */}
-      <div className="admin-logout">
-        <Button
-          variant="secondary"
-          onClick={logout}
-        >
-          Logout
-        </Button>
-      </div>
+    
 
     </div>
   );

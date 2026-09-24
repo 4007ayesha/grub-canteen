@@ -20,6 +20,7 @@ const emptyForm = {
   category_id: "",
   available: true,
   image_url: "",
+  current_stock: "",
 };
 
 function AdminMenu() {
@@ -66,18 +67,19 @@ function AdminMenu() {
   }
 
   function openEditForm(item) {
-    setEditingId(item.id);
-    setForm({
-      name: item.name,
-      description: item.description || "",
-      price: item.price,
-      category_id: item.category_id,
-      available: item.available,
-      image_url: item.image_url || "",
-    });
-    setFormError("");
-    setShowForm(true);
-  }
+  setEditingId(item.id);
+  setForm({
+    name: item.name,
+    description: item.description || "",
+    price: item.price,
+    category_id: item.category_id,
+    available: item.available,
+    image_url: item.image_url || "",
+    current_stock: item.current_stock ?? "",
+  });
+  setFormError("");
+  setShowForm(true);
+}
 
   async function handleSubmit(e) {
   e.preventDefault();
@@ -90,10 +92,18 @@ function AdminMenu() {
     return;
   }
 
+  const parsedStock = parseInt(form.current_stock, 10);
+
+  if (isNaN(parsedStock) || parsedStock < 0) {
+    setFormError("Current stock must be a number, 0 or greater.");
+    return;
+  }
+
   const payload = {
     ...form,
     price: parsedPrice,
     category_id: parseInt(form.category_id, 10),
+    current_stock: parsedStock,
   };
 
   try {
@@ -207,22 +217,27 @@ function AdminMenu() {
           </label>
 
           <label className="admin-menu-checkbox">
-            <input
-              type="checkbox"
-              checked={form.available}
-              onChange={(e) =>
-                setForm({ ...form, available: e.target.checked })
-              }
-            />
-            Available
-          </label>
+  <input
+    type="checkbox"
+    checked={form.available}
+    onChange={(e) =>
+      setForm({ ...form, available: e.target.checked })
+    }
+  />
+  Available
+</label>
 
-          <Input
-            label="Image URL"
-            name="image_url"
-            value={form.image_url}
-            onChange={(e) => setForm({ ...form, image_url: e.target.value })}
-          />
+<Input
+  label="Current Stock"
+  name="current_stock"
+  type="number"
+  min="0"
+  value={form.current_stock}
+  onChange={(e) =>
+    setForm({ ...form, current_stock: e.target.value })
+  }
+  required
+/>
 
           {formError && <p className="menu-error">{formError}</p>}
 

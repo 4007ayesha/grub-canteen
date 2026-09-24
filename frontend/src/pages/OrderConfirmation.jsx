@@ -13,7 +13,7 @@ const OrderConfirmation = () => {
   return (
     <div className="order-confirmation-page">
       <div className="order-confirmation-card">
-        <div className="success-icon">🎉</div>
+        
 
         <h1>Order Confirmed!</h1>
 
