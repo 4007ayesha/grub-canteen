@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AdminDashboard from "./pages/AdminDashboard";
 import Orders from "./pages/Orders";
+import Home from "./pages/Home";
 
 import { useAuth } from "./context/AuthContext";
 import "./App.css";
@@ -36,13 +37,13 @@ function App() {
         {/* ========================= */}
 
         <Route
-          path="/"
-          element={
-            <PageLayout>
-              <Login />
-            </PageLayout>
-          }
-        />
+  path="/"
+  element={
+    <PageLayout>
+      <Login />
+    </PageLayout>
+  }
+/>
 
         <Route
           path="/login"
@@ -73,6 +74,7 @@ function App() {
     </ProtectedRoute>
   }
 >
+  <Route path="/" element={<Home />} />
   <Route path="/menu" element={<Menu />} />
   <Route path="/orders" element={<Orders />} />
   <Route path="/food/:id" element={<FoodDetails />} />
@@ -80,7 +82,6 @@ function App() {
   <Route path="/order-confirmation" element={<OrderConfirmation />} />
   <Route path="/order-tracking/:orderId" element={<OrderTracking />} />
 </Route>
-
         {/* ========================= */}
         {/* Admin Pages */}
         {/* ========================= */}

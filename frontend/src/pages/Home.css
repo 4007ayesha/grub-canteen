@@ -1,0 +1,19 @@
+.home-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.home-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  max-width: 400px;
+}
+
+.home-message {
+  margin: 0;
+  color: var(--color-text);
+  font-weight: 600;
+}

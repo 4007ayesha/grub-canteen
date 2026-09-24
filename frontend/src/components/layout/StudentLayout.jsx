@@ -39,8 +39,46 @@ function SearchIcon() {
   );
 }
 
+function MenuIcon() {
+  return (
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <line x1="3" y1="6" x2="21" y2="6" />
+      <line x1="3" y1="12" x2="21" y2="12" />
+      <line x1="3" y1="18" x2="21" y2="18" />
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  );
+}
+
 function StudentLayout() {
   const [cartOpen, setCartOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const { totalItems } = useCart();
   const { setSearchActive } = useSearch();
   const location = useLocation();
@@ -50,13 +88,30 @@ function StudentLayout() {
     location.pathname.startsWith("/order-tracking/") ||
     location.pathname === "/orders";
 
+  function closeMenu() {
+    setMenuOpen(false);
+  }
+
   return (
     <div className="student-layout">
-      <aside className="student-sidebar">
-        <h2 className="student-sidebar-title"> Grub Canteen</h2>
+      <button
+        type="button"
+        className="student-hamburger"
+        onClick={() => setMenuOpen(!menuOpen)}
+        aria-label={menuOpen ? "Close menu" : "Open menu"}
+      >
+        {menuOpen ? <CloseIcon /> : <MenuIcon />}
+      </button>
+
+      {menuOpen && (
+        <div className="student-sidebar-backdrop" onClick={closeMenu} />
+      )}
+
+      <aside className={`student-sidebar ${menuOpen ? "open" : ""}`}>
+        <h2 className="student-sidebar-title">Grub Canteen</h2>
         <p className="student-sidebar-subtitle">Student Panel</p>
 
-        <nav className="student-nav">
+        <nav className="student-nav" onClick={closeMenu}>
           <NavLink to="/" end>
             Home
           </NavLink>

@@ -18,7 +18,7 @@ function Navbar() {
     <>
       <nav className="navbar">
         <div className="navbar-logo">
-          🍔 Grub Canteen
+           Grub Canteen
         </div>
 
         <ul className="navbar-links">
@@ -55,31 +55,31 @@ function Navbar() {
             </Link>
           </li>
 
-          {/* Notifications - Student only */}
-          {!isAdmin && (
-            <li>
-              <NotificationBell />
-            </li>
-          )}
+         {/* Cart - Student only */}
+{!isAdmin && (
+  <li>
+    <button
+      type="button"
+      onClick={() => setCartOpen(true)}
+      style={{
+        background: "none",
+        border: "none",
+        cursor: "pointer",
+        font: "inherit",
+        padding: 0,
+      }}
+    >
+      Cart
+    </button>
+  </li>
+)}
 
-          {/* Cart - Student only */}
-          {!isAdmin && (
-            <li>
-              <button
-                type="button"
-                onClick={() => setCartOpen(true)}
-                style={{
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  font: "inherit",
-                  padding: 0,
-                }}
-              >
-                Cart
-              </button>
-            </li>
-          )}
+{/* Notifications - Student only */}
+{!isAdmin && (
+  <li>
+    <NotificationBell />
+  </li>
+)}
 
         </ul>
 
