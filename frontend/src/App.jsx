@@ -1,17 +1,16 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import PageLayout from "./components/layout/PageLayout";
 import AdminLayout from "./components/layout/AdminLayout";
 import StudentLayout from "./components/layout/StudentLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Splash from "./pages/Splash";
+import Home from "./pages/Home";
 import AdminDashboard from "./pages/AdminDashboard";
 import Orders from "./pages/Orders";
-import Home from "./pages/Home";
 
-import { useAuth } from "./context/AuthContext";
 import "./App.css";
 
 import Menu from "./pages/Menu";
@@ -20,8 +19,6 @@ import AdminOrders from "./pages/AdminOrders";
 import AdminInventory from "./pages/AdminInventory";
 import AdminAnalytics from "./pages/AdminAnalytics";
 import FoodDetails from "./pages/FoodDetails";
-
-import { useCart } from "./context/CartContext";
 
 import Checkout from "./pages/Checkout";
 import OrderConfirmation from "./pages/OrderConfirmation";
@@ -33,55 +30,33 @@ function App() {
       <Routes>
 
         {/* ========================= */}
-        {/* Student / Public Pages */}
+        {/* Splash / Public Pages */}
         {/* ========================= */}
 
-        <Route
-  path="/"
-  element={
-    <PageLayout>
-      <Login />
-    </PageLayout>
-  }
-/>
-
-        <Route
-          path="/login"
-          element={
-            <PageLayout>
-              <Login />
-            </PageLayout>
-          }
-        />
-
-        <Route
-          path="/register"
-          element={
-            <PageLayout>
-              <Register />
-            </PageLayout>
-          }
-        />
+        <Route path="/" element={<Splash />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
         {/* ========================= */}
         {/* Student Pages (Sidebar)   */}
         {/* ========================= */}
 
         <Route
-  element={
-    <ProtectedRoute>
-      <StudentLayout />
-    </ProtectedRoute>
-  }
->
-  <Route path="/" element={<Home />} />
-  <Route path="/menu" element={<Menu />} />
-  <Route path="/orders" element={<Orders />} />
-  <Route path="/food/:id" element={<FoodDetails />} />
-  <Route path="/checkout" element={<Checkout />} />
-  <Route path="/order-confirmation" element={<OrderConfirmation />} />
-  <Route path="/order-tracking/:orderId" element={<OrderTracking />} />
-</Route>
+          element={
+            <ProtectedRoute>
+              <StudentLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/home" element={<Home />} />
+          <Route path="/menu" element={<Menu />} />
+          <Route path="/orders" element={<Orders />} />
+          <Route path="/food/:id" element={<FoodDetails />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/order-confirmation" element={<OrderConfirmation />} />
+          <Route path="/order-tracking/:orderId" element={<OrderTracking />} />
+        </Route>
+
         {/* ========================= */}
         {/* Admin Pages */}
         {/* ========================= */}

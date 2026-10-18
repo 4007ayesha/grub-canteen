@@ -1,19 +1,21 @@
 :root {
   /* Colors */
-  --color-primary: #F09DBB;
-  --color-primary-dark: #D982A3;
-  --color-secondary: #9EB79B;
+  --color-primary: #E96F91;
+  --color-primary-dark: #D65A7A;
+  --color-primary-light: #F7C5D2;
+  --color-accent: #F184A3;
+  --color-secondary: #91A98C;
 
-  --color-background: #FBF8CE;
-  --color-surface: #FFFDF0;
+  --color-background: #FBF3EE;
+  --color-surface: #FFF9F5;
 
---color-text: #3F3A3A;
---color-text-muted: #756D6D;
+  --color-text: #4A2923;
+  --color-text-muted: #806B65;
 
---color-border: #E8D6DC;
---color-success: #9EB79B;
---color-error: #D96B8A;
---color-warning: #E6B85C;  
+  --color-border: #F0B6C4;
+  --color-success: #6FA36A;
+  --color-error: #D6567F;
+  --color-warning: #E3A857;
 
   /* Spacing */
   --space-xs: 4px;

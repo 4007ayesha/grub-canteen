@@ -1,69 +1,203 @@
 .menu-page {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  gap: var(--space-xl);
   padding-bottom: var(--space-2xl);
 }
 
-/* =========================
-   PAGE HEADER
-   ========================= */
-
-.menu-header {
-  margin-bottom: var(--space-xs);
+.menu-section {
+  position: relative;
+  z-index: 1;
 }
 
-.menu-header h1 {
+/* =========================
+   Decorations
+   ========================= */
+
+.menu-decor {
+  position: absolute;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.menu-decor img {
+  position: absolute;
+  display: block;
+  height: 316px;
+  width: auto;
+  max-width: none;
+}
+
+/* lamp + leaf sprig: top half of the art, hanging from the header */
+.menu-decor-lamp {
+  top: calc(-1 * var(--space-lg));
+  right: 0;
+  width: 269px;
+  height: 150px;
+  -webkit-mask-image: radial-gradient(
+    ellipse 75% 80% at 50% 45%,
+    #000 55%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    ellipse 75% 80% at 50% 45%,
+    #000 55%,
+    transparent 100%
+  );
+}
+
+.menu-decor-lamp img {
+  top: 0;
+  left: 0;
+}
+
+/* plant: bottom-right of the art, peeking out in the right margin */
+.menu-decor-plant {
+  top: 150px;
+  right: calc(-1 * var(--shell-gutter));
+  width: var(--shell-gutter);
+  height: 150px;
+}
+
+.menu-decor-plant img {
+  top: -160px;
+  left: -125px;
+}
+
+/* handwritten motto over the bottom-left blob */
+.menu-motto {
+  position: fixed;
+  left: 64px;
+  bottom: 70px;
+  z-index: 0;
+  display: flex;
+  flex-direction: column;
+  transform: rotate(-14deg);
+  color: rgba(233, 111, 145, 0.5);
+  font-family: "Segoe Script", "Bradley Hand", "Comic Sans MS", cursive;
+  font-size: 26px;
+  line-height: 1.1;
+  pointer-events: none;
+}
+
+/* =========================
+   Section headers
+   ========================= */
+
+.menu-section-header {
+  margin-bottom: var(--space-md);
+}
+
+.menu-section-header h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
   margin: 0;
   color: var(--color-text);
-  font-size: var(--font-size-2xl);
-  font-weight: 700;
-  line-height: 1.2;
+  font-size: var(--font-size-xl);
 }
 
-.menu-header p {
-  margin: var(--space-xs) 0 0;
-  color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
-}
-
-.menu-subtitle {
-  margin: 0 0 var(--space-sm);
-  color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
+.menu-squiggle {
+  color: var(--color-primary);
+  flex-shrink: 0;
 }
 
 /* =========================
-   SEARCH
+   Image tile (shared)
    ========================= */
 
-.menu-search {
+.menu-tile-image {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
-  max-width: 650px;
+  overflow: hidden;
+  border-radius: 16px;
+  background: var(--color-primary-light);
+}
+
+.menu-tile-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.menu-tile-image::before,
+.menu-tile-image::after {
+  content: "";
+  position: absolute;
+  top: 12px;
+  width: 12px;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--color-primary);
+}
+
+.menu-tile-image::before {
+  left: 12px;
+  transform: rotate(-35deg);
+}
+
+.menu-tile-image::after {
+  right: 12px;
+  transform: rotate(35deg);
 }
 
 /* =========================
-   CATEGORIES
+   Popular Picks (large cards)
+   ========================= */
+
+.menu-popular-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-lg);
+}
+
+.menu-popular-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  border-radius: 22px;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.menu-popular-card .menu-tile-image {
+  height: 130px;
+}
+
+.menu-popular-name {
+  margin: var(--space-xs) 0 0;
+  color: var(--color-text);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+}
+
+/* =========================
+   Category chips
    ========================= */
 
 .menu-categories {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
   flex-wrap: wrap;
+  gap: var(--space-sm);
 }
 
 .menu-chip {
-  padding: 9px 18px;
-  border: 1px solid var(--color-border);
+  padding: 9px 22px;
+  border: 1px solid var(--color-primary-light);
   border-radius: 999px;
   background: var(--color-surface);
-  color: var(--color-text);
+  color: var(--color-primary);
   cursor: pointer;
-
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-md);
   font-weight: 600;
-
   transition:
     background-color 0.2s ease,
     color 0.2s ease,
@@ -74,14 +208,13 @@
 
 .menu-chip:hover {
   border-color: var(--color-primary);
-  color: var(--color-primary);
   transform: translateY(-1px);
 }
 
 .menu-chip.active {
   background: var(--color-primary);
-  color: white;
   border-color: var(--color-primary);
+  color: white;
   box-shadow: 0 4px 10px rgba(63, 58, 58, 0.12);
 }
 
@@ -90,18 +223,112 @@
 }
 
 /* =========================
-   FOOD GRID
+   All Menu Items (compact cards)
    ========================= */
 
 .menu-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-  gap: var(--space-lg);
-  margin-top: var(--space-xl);
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: var(--space-md);
+}
+
+.menu-grid-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  height: 100%;
+  padding: var(--space-sm);
+  border-radius: 18px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.menu-grid-card .menu-tile-image {
+  height: 100px;
+}
+
+.menu-grid-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-xs) var(--space-xs) 0;
+}
+
+.menu-grid-name {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+}
+
+.menu-grid-desc {
+  margin: 0;
+  overflow: hidden;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.menu-grid-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding: var(--space-sm) var(--space-xs) var(--space-xs);
+}
+
+.menu-grid-price {
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+}
+
+.menu-add-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.menu-add-btn:hover {
+  background: var(--color-primary-dark);
+  transform: scale(1.1);
+}
+
+.menu-item-link:hover .menu-popular-card,
+.menu-item-link:hover .menu-grid-card {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(63, 58, 58, 0.1);
 }
 
 /* =========================
-   FOOD CARD
+   Status / error
+   ========================= */
+
+.menu-status {
+  margin: var(--space-md) 0;
+  color: var(--color-text-muted);
+}
+
+.menu-error {
+  margin: var(--space-md) 0;
+  padding: var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-error);
+}
+
+/* =========================
+   Used by search overlay results
    ========================= */
 
 .menu-item-link {
@@ -115,7 +342,6 @@
   height: 100%;
   overflow: hidden;
   padding: var(--space-md);
-
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease,
@@ -128,30 +354,14 @@
   box-shadow: 0 12px 28px rgba(63, 58, 58, 0.13);
 }
 
-/* =========================
-   FOOD IMAGE
-   ========================= */
-
 .menu-item-image {
+  display: block;
   width: 100%;
   height: 155px;
-  display: block;
-
-  object-fit: cover;
-  border-radius: var(--radius-md);
-
   margin-bottom: var(--space-md);
-
-  transition: transform 0.25s ease;
+  border-radius: var(--radius-md);
+  object-fit: cover;
 }
-
-.menu-item-link:hover .menu-item-image {
-  transform: scale(1.02);
-}
-
-/* =========================
-   FOOD CONTENT
-   ========================= */
 
 .menu-item-content {
   display: flex;
@@ -161,7 +371,6 @@
 
 .menu-item-content h3 {
   margin: 0 0 var(--space-xs);
-
   color: var(--color-text);
   font-size: var(--font-size-lg);
   font-weight: 700;
@@ -170,26 +379,19 @@
 
 .menu-item-content p {
   margin: 0;
-
-  color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
-  line-height: 1.5;
-
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   overflow: hidden;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
 }
-
-/* =========================
-   PRICE + ADD TO CART / AVAILABILITY
-   ========================= */
 
 .menu-item-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   gap: var(--space-sm);
   margin-top: auto;
   padding-top: var(--space-md);
@@ -201,88 +403,42 @@
   font-weight: 700;
 }
 
-.menu-item-add-icon-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border: none;
-  border-radius: 50%;
-  background: var(--color-primary);
-  color: white;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: background-color 0.2s ease, transform 0.15s ease;
-}
-
-.menu-item-add-icon-btn:hover {
-  background: var(--color-primary-dark);
-  transform: scale(1.08);
-}
-
 /* =========================
-   STATUS / ERROR
+   Responsive
    ========================= */
 
-.menu-status {
-  margin: var(--space-md) 0;
-  color: var(--color-text-muted);
+@media (max-width: 1100px) {
+  .menu-popular-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
-
-.menu-error {
-  margin: var(--space-md) 0;
-  padding: var(--space-md);
-
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-
-  background: var(--color-surface);
-  color: var(--color-error);
-}
-
-/* =========================
-   TABLET
-   ========================= */
 
 @media (max-width: 900px) {
-  .menu-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-md);
-  }
-
-  .menu-item-image {
-    height: 150px;
+  .menu-decor-plant,
+  .menu-motto {
+    display: none;
   }
 }
-
-/* =========================
-   MOBILE
-   ========================= */
 
 @media (max-width: 600px) {
   .menu-page {
-    gap: var(--space-md);
+    gap: var(--space-lg);
   }
 
-  .menu-header h1 {
-    font-size: var(--font-size-xl);
-  }
-
-  .menu-categories {
-    gap: 8px;
-  }
-
-  .menu-chip {
-    padding: 8px 14px;
+  .menu-decor-lamp {
+    display: none;
   }
 
   .menu-grid {
-    grid-template-columns: 1fr;
-    gap: var(--space-md);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .menu-item-image {
-    height: 180px;
+  .menu-popular-card .menu-tile-image {
+    height: 100px;
+  }
+
+  .menu-chip {
+    padding: 8px 16px;
+    font-size: var(--font-size-sm);
   }
 }
