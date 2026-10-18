@@ -4,7 +4,48 @@ import { getMenuItems, getCategories } from "../api";
 import { useCart } from "../context/CartContext";
 import Card from "../components/ui/Card";
 import Badge from "../components/ui/Badge";
+import heroRight from "../assets/home-hero-right.png";
 import "./Menu.css";
+
+function Squiggle() {
+  return (
+    <svg
+      className="menu-squiggle"
+      width="18"
+      height="28"
+      viewBox="0 0 26 40"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+    >
+      <line x1="4" y1="6" x2="20" y2="10" />
+      <line x1="2" y1="18" x2="18" y2="20" />
+      <line x1="6" y1="32" x2="18" y2="26" />
+    </svg>
+  );
+}
+
+function PlusIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+    >
+      <line x1="12" y1="5" x2="12" y2="19" />
+      <line x1="5" y1="12" x2="19" y2="12" />
+    </svg>
+  );
+}
+
+function isOutOfStock(item) {
+  return !item.available || item.current_stock === 0;
+}
 
 function Menu() {
   const { addToCart } = useCart();
@@ -24,7 +65,7 @@ function Menu() {
     setLoading(true);
     setError("");
 
-    getMenuItems("", selectedCategory)
+    getMenuItems()
       .then((data) => {
         setItems(data);
         setLoading(false);
@@ -33,7 +74,7 @@ function Menu() {
         setError("Unable to load menu. Please try again.");
         setLoading(false);
       });
-  }, [selectedCategory]);
+  }, []);
 
   function handleAddToCart(e, item) {
     e.preventDefault();
@@ -41,14 +82,70 @@ function Menu() {
     addToCart(item);
   }
 
+  const popularPicks = items.slice(0, 4);
+
+  const visibleItems =
+    selectedCategory === null
+      ? items
+      : items.filter((item) => item.category_id === selectedCategory);
+
+  const dataReady = !loading && !error;
+
   return (
     <div className="menu-page">
-      <p className="menu-subtitle">
-        Choose your favorite food and place your order.
-      </p>
+      {/* decorations (all reuse existing assets) */}
+      <div className="menu-decor menu-decor-lamp" aria-hidden="true">
+        <img src={heroRight} alt="" />
+      </div>
+      <div className="menu-decor menu-decor-plant" aria-hidden="true">
+        <img src={heroRight} alt="" />
+      </div>
+      <div className="menu-motto" aria-hidden="true">
+        <span>Eat</span>
+        <span>Good</span>
+        <span>Live</span>
+        <span>Happy</span>
+      </div>
 
-      <div className="menu-categories">
+      <section className="menu-section">
+        <div className="menu-section-header">
+          <h2>
+            <Squiggle />
+            Popular Picks
+          </h2>
+        </div>
+
+        {loading && <p className="menu-status">Loading menu...</p>}
+        {!loading && error && <p className="menu-error">{error}</p>}
+        {dataReady && items.length === 0 && (
+          <p className="menu-status">No food items found.</p>
+        )}
+
+        {dataReady && popularPicks.length > 0 && (
+          <div className="menu-popular-grid">
+            {popularPicks.map((item) => (
+              <Link
+                key={item.id}
+                to={`/food/${item.id}`}
+                className="menu-item-link"
+              >
+                <Card className="menu-popular-card">
+                  <div className="menu-tile-image">
+                    {item.image_url && (
+                      <img src={item.image_url} alt={item.name} />
+                    )}
+                  </div>
+                  <p className="menu-popular-name">{item.name}</p>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <div className="menu-categories menu-section">
         <button
+          type="button"
           className={`menu-chip ${selectedCategory === null ? "active" : ""}`}
           onClick={() => setSelectedCategory(null)}
         >
@@ -58,6 +155,7 @@ function Menu() {
         {categories.map((cat) => (
           <button
             key={cat.id}
+            type="button"
             className={`menu-chip ${
               selectedCategory === cat.id ? "active" : ""
             }`}
@@ -68,67 +166,62 @@ function Menu() {
         ))}
       </div>
 
-      {loading && <p className="menu-status">Loading menu...</p>}
-      {!loading && error && <p className="menu-error">{error}</p>}
-      {!loading && !error && items.length === 0 && (
-        <p className="menu-status">No food items found.</p>
-      )}
+      <section className="menu-section">
+        <div className="menu-section-header">
+          <h2>
+            <Squiggle />
+            All Menu Items
+          </h2>
+        </div>
 
-      {!loading && !error && items.length > 0 && (
-        <div className="menu-grid">
-          {items.map((item) => (
-            <Link
-              key={item.id}
-              to={`/food/${item.id}`}
-              className="menu-item-link"
-            >
-              <Card className="menu-item-card">
-                {item.image_url && (
-                  <img
-                    src={item.image_url}
-                    alt={item.name}
-                    className="menu-item-image"
-                  />
-                )}
+        {dataReady && items.length > 0 && visibleItems.length === 0 && (
+          <p className="menu-status">No food items found.</p>
+        )}
 
-                <div className="menu-item-content">
-                  <h3>{item.name}</h3>
-                  {item.description && <p>{item.description}</p>}
-                  <div className="menu-item-footer">
-                    <strong>₹{item.price}</strong>
+        {dataReady && visibleItems.length > 0 && (
+          <div className="menu-grid">
+            {visibleItems.map((item) => (
+              <Link
+                key={item.id}
+                to={`/food/${item.id}`}
+                className="menu-item-link"
+              >
+                <Card className="menu-grid-card">
+                  <div className="menu-tile-image">
+                    {item.image_url && (
+                      <img src={item.image_url} alt={item.name} />
+                    )}
+                  </div>
 
-                    {item.available ? (
+                  <div className="menu-grid-body">
+                    <h3 className="menu-grid-name">{item.name}</h3>
+                    {item.description && (
+                      <p className="menu-grid-desc">{item.description}</p>
+                    )}
+                  </div>
+
+                  <div className="menu-grid-footer">
+                    <strong className="menu-grid-price">₹{item.price}</strong>
+
+                    {isOutOfStock(item) ? (
+                      <Badge variant="warning">Out of stock</Badge>
+                    ) : (
                       <button
                         type="button"
-                        className="menu-item-add-icon-btn"
+                        className="menu-add-btn"
                         onClick={(e) => handleAddToCart(e, item)}
                         aria-label={`Add ${item.name} to cart`}
                       >
-                        <svg
-                          width="18"
-                          height="18"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <circle cx="9" cy="21" r="1" />
-                          <circle cx="20" cy="21" r="1" />
-                          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-                        </svg>
+                        <PlusIcon />
                       </button>
-                    ) : (
-                      <Badge variant="warning">Unavailable</Badge>
                     )}
                   </div>
-                </div>
-              </Card>
-            </Link>
-          ))}
-        </div>
-      )}
+                </Card>
+              </Link>
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }
