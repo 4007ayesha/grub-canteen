@@ -1,9 +1,86 @@
-.admin-layout {
-  display: flex;
+
+/* =========================
+   Admin shell and background
+   ========================= */
+
+.admin-shell {
   min-height: 100vh;
+  padding: 24px clamp(16px, 4.5vw, 72px);
+  box-sizing: border-box;
   background: var(--color-background);
   color: var(--color-text);
   font-family: var(--font-family);
+  position: relative;
+  overflow-x: clip;
+}
+
+.admin-bg-corner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 300px;
+  max-width: 35vw;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.admin-bg-cup {
+  position: fixed;
+  bottom: 12px;
+  right: 18px;
+  width: 65px;
+  max-width: 12vw;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* =========================
+   Header
+   ========================= */
+
+.admin-header {
+  min-height: 80px;
+  padding: 8px 24px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 28px;
+  position: relative;
+  z-index: 2;
+}
+
+.admin-header-logo {
+  display: block;
+  width: auto;
+  height: 68px;
+  max-width: 70%;
+  object-fit: contain;
+}
+
+.admin-header-spacer {
+  flex: 1;
+}
+
+.admin-header-label {
+  color: var(--color-primary-dark);
+  font-size: var(--font-size-md);
+  font-weight: 600;
+}
+
+/* =========================
+   Main layout
+   ========================= */
+
+.admin-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  margin-top: 24px;
+  position: relative;
+  z-index: 1;
 }
 
 /* =========================
@@ -11,26 +88,31 @@
    ========================= */
 
 .admin-sidebar {
-  width: 250px;
-  min-height: 100vh;
-  background: var(--color-surface);
-  border-right: 1px solid var(--color-border);
-  padding: var(--space-xl);
+  width: 230px;
+  flex: 0 0 230px;
+  padding: 20px 16px;
   box-sizing: border-box;
-  flex-shrink: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 24px;
+  position: relative;
 }
 
 .admin-sidebar-title {
-  margin: 0;
-  font-size: var(--font-size-xl);
+  margin: 4px 8px 20px;
   color: var(--color-primary-dark);
-  line-height: 1.2;
+  font-size: var(--font-size-xl);
+  line-height: 1.3;
 }
 
 .admin-sidebar-subtitle {
-  margin: var(--space-xs) 0 var(--space-xl);
+  margin: 4px 8px 20px;
   color: var(--color-text-muted);
   font-size: var(--font-size-sm);
+}
+
+.admin-sidebar-close {
+  display: none;
 }
 
 /* =========================
@@ -40,44 +122,50 @@
 .admin-nav {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+  gap: 8px;
 }
 
-.admin-nav a {
-  display: block;
-  text-decoration: none;
-  color: var(--color-text);
-  padding: 12px var(--space-md);
-  border-radius: var(--radius-md);
-  font-weight: 600;
-  transition: 0.2s ease;
-}
-
-.admin-nav a:hover {
-  background: var(--color-background);
-}
-
-.admin-nav a.active {
-  background: var(--color-primary);
-  color: white;
-}
-
-.admin-nav-logout {
-  display: block;
+.admin-nav a,
+.admin-nav-button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   width: 100%;
-  text-align: left;
-  margin-top: var(--space-md);
-  padding: 12px var(--space-md);
+  box-sizing: border-box;
+  padding: 12px 14px;
   border: none;
-  border-top: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: none;
-  color: var(--color-error);
+  border-radius: 16px;
+  background: transparent;
+  color: var(--color-text);
+  text-decoration: none;
+  text-align: left;
   font-family: var(--font-family);
   font-size: var(--font-size-md);
   font-weight: 600;
   cursor: pointer;
-  transition: 0.2s ease;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.admin-nav a svg,
+.admin-nav-button svg {
+  flex-shrink: 0;
+}
+
+.admin-nav a:hover,
+.admin-nav-button:hover {
+  background: var(--color-background);
+}
+
+.admin-nav a.active {
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
+.admin-nav-logout {
+  margin-top: 16px;
+  border-top: 1px solid var(--color-border);
+  border-radius: 0 0 16px 16px;
+  color: var(--color-error);
 }
 
 .admin-nav-logout:hover {
@@ -85,36 +173,32 @@
 }
 
 /* =========================
-   Main Content
+   Page content
    ========================= */
 
 .admin-content {
   flex: 1;
   min-width: 0;
-  padding: var(--space-2xl);
+  padding: 8px 0 32px;
   box-sizing: border-box;
 }
 
 /* =========================
-   Hamburger (mobile only)
+   Mobile menu controls
    ========================= */
 
 .admin-hamburger {
   display: none;
   align-items: center;
   justify-content: center;
-  position: fixed;
-  top: var(--space-md);
-  left: var(--space-md);
   width: 40px;
   height: 40px;
+  flex-shrink: 0;
   border: none;
   border-radius: 50%;
-  background: var(--color-surface);
+  background: var(--color-background);
   color: var(--color-text);
-  box-shadow: 0 2px 8px rgba(63, 58, 58, 0.15);
   cursor: pointer;
-  z-index: 1400;
 }
 
 .admin-sidebar-backdrop {
@@ -122,20 +206,50 @@
 }
 
 /* =========================
-   Mobile layout
+   Responsive layout
    ========================= */
 
 @media (max-width: 768px) {
+  .admin-shell {
+    padding: 16px;
+  }
+
+  .admin-header {
+    min-height: 64px;
+    padding: 8px 12px;
+    gap: 10px;
+    border-radius: 22px;
+  }
+
+  .admin-header-logo {
+    height: 48px;
+  }
+
+  .admin-header-label {
+    font-size: var(--font-size-sm);
+  }
+
   .admin-hamburger {
     display: flex;
+  }
+
+  .admin-body {
+    display: block;
+    margin-top: 16px;
   }
 
   .admin-sidebar {
     position: fixed;
     top: 0;
+    bottom: 0;
     left: 0;
+    width: min(280px, 85vw);
     height: 100vh;
-    transform: translateX(-100%);
+    height: 100dvh;
+    overflow-y: auto;
+    padding: 24px 16px;
+    border-radius: 0 24px 24px 0;
+    transform: translateX(-110%);
     transition: transform 0.25s ease;
     box-shadow: 0 0 24px rgba(0, 0, 0, 0.15);
     z-index: 1300;
@@ -143,6 +257,20 @@
 
   .admin-sidebar.open {
     transform: translateX(0);
+  }
+
+  .admin-sidebar-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    margin: 0 0 16px auto;
+    border: none;
+    border-radius: 50%;
+    background: var(--color-background);
+    color: var(--color-text);
+    cursor: pointer;
   }
 
   .admin-sidebar-backdrop {
@@ -154,6 +282,14 @@
   }
 
   .admin-content {
-    padding: calc(var(--space-md) + 48px) var(--space-md) var(--space-xl);
+    padding: 8px 0 24px;
+  }
+
+  .admin-bg-corner {
+    width: 180px;
+  }
+
+  .admin-bg-cup {
+    width: 48px;
   }
 }
