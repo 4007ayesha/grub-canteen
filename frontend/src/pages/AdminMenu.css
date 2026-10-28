@@ -1,63 +1,128 @@
-.admin-menu-page {
+.mnu-toolbar {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
 }
 
-.admin-menu-header {
+.mnu-list {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.mnu-row {
+  display: flex;
   align-items: center;
-}
-
-.admin-menu-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-}
-
-.admin-menu-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.admin-menu-info {
-  display: flex;
   gap: var(--space-md);
+  padding: 10px var(--space-lg);
+  border-radius: 18px;
 }
 
-.admin-menu-actions {
+.mnu-leaf {
+  display: flex;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.mnu-row .mnu-leaf:last-child {
+  margin-left: 0;
+}
+
+.mnu-thumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--color-primary-light);
+}
+
+.mnu-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mnu-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.mnu-info strong {
+  overflow: hidden;
+  color: var(--color-text);
+  font-size: var(--font-size-md);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mnu-info span {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.mnu-actions {
   display: flex;
   gap: var(--space-sm);
 }
 
-.admin-menu-form {
+/* modal form */
+.mnu-form {
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
 }
 
-.admin-menu-label {
+.mnu-form-label {
   display: flex;
   flex-direction: column;
   gap: 4px;
   font-weight: 600;
 }
 
-.admin-menu-checkbox {
+.mnu-form-label select {
+  height: 42px;
+  padding: 0 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: inherit;
+}
+
+.mnu-form-checkbox {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
   font-weight: 600;
 }
 
-.admin-menu-form-actions {
+.mnu-form-actions {
   display: flex;
   gap: var(--space-sm);
   margin-top: var(--space-sm);
 }
 
-.menu-error {
-  color: var(--color-error);
+@media (max-width: 700px) {
+  .mnu-leaf {
+    display: none;
+  }
+
+  .mnu-row {
+    flex-wrap: wrap;
+    padding: 12px var(--space-md);
+  }
+
+  .mnu-info {
+    flex: 1 1 140px;
+  }
+
+  .mnu-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
 }

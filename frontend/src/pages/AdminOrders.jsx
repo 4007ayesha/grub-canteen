@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import AdminPage, { AdminPageHeader } from "../components/layout/AdminPage";
+import { Squiggle, LeafIcon } from "../components/layout/Decor";
 import "./AdminOrders.css";
+
+const statuses = ["received", "preparing", "ready", "collected"];
+
+function capitalize(text) {
+  if (!text) return "";
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
 
 const AdminOrders = () => {
   const { token } = useAuth();
@@ -9,18 +18,8 @@ const AdminOrders = () => {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-
-  // Phase 10 - Filter
   const [filter, setFilter] = useState("");
 
-  const statuses = [
-    "received",
-    "preparing",
-    "ready",
-    "collected",
-  ];
-
-  // Fetch orders
   const fetchOrders = async () => {
     try {
       setLoading(true);
@@ -56,7 +55,6 @@ const AdminOrders = () => {
     }
   }, [token, filter]);
 
-  // Update order status
   const updateStatus = async (orderId, newStatus) => {
     try {
       setMessage("");
@@ -73,210 +71,153 @@ const AdminOrders = () => {
       );
 
       if (!response.ok) {
-        throw new Error("Unable to update status");
+        let detail = "";
+        try {
+          const data = await response.json();
+          detail = typeof data.detail === "string" ? data.detail : "";
+        } catch {
+          detail = "";
+        }
+        throw new Error(detail || "Unable to update order status.");
       }
 
       setOrders((currentOrders) =>
         currentOrders.map((order) =>
-          order.id === orderId
-            ? { ...order, status: newStatus }
-            : order
+          order.id === orderId ? { ...order, status: newStatus } : order
         )
       );
 
-      setMessage(
-        `Order #${orderId} status updated to ${newStatus}.`
-      );
+      setMessage(`Order #${orderId} status updated to ${newStatus}.`);
     } catch (err) {
-      setError("Unable to update order status.");
+      setError(err.message || "Unable to update order status.");
     }
   };
 
-  // Status badge class
-  const getStatusClass = (status) => {
-    switch (status) {
-      case "received":
-        return "status-received";
-
-      case "preparing":
-        return "status-preparing";
-
-      case "ready":
-        return "status-ready";
-
-      case "collected":
-        return "status-collected";
-
-      default:
-        return "";
-    }
-  };
-
-  // Loading state
   if (loading) {
     return (
-      <div className="admin-orders-page">
-        <h2>Loading orders...</h2>
-      </div>
+      <AdminPage>
+        <p className="adm-status-text">Loading orders...</p>
+      </AdminPage>
     );
   }
 
   return (
-    <div className="admin-orders-page">
+    <AdminPage>
+      <AdminPageHeader
+        title="Order Management"
+        subtitle="View and manage incoming canteen orders."
+      />
 
-      {/* Header */}
-      <div className="admin-orders-header">
-        <div>
-          <h1>Order Management</h1>
-          <p>
-            View and manage incoming canteen orders.
-          </p>
-        </div>
-      </div>
-
-      {/* Filter */}
-      <div className="admin-orders-filter">
-        <label htmlFor="order-filter">
-          Filter Orders:
-        </label>
+      <div className="adm-card ord-filter">
+        <label htmlFor="order-filter">Filter Orders:</label>
 
         <select
           id="order-filter"
+          className="adm-select ord-filter-select"
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
         >
           <option value="">All Orders</option>
-
           {statuses.map((status) => (
             <option key={status} value={status}>
-              {status.charAt(0).toUpperCase() + status.slice(1)}
+              {capitalize(status)}
             </option>
           ))}
         </select>
       </div>
 
-      {/* Success message */}
-      {message && (
-        <div className="admin-orders-message">
-          {message}
-        </div>
-      )}
+      {message && <div className="adm-message">{message}</div>}
+      {error && <div className="adm-error">{error}</div>}
 
-      {/* Error message */}
-      {error && (
-        <div className="admin-orders-error">
-          {error}
-        </div>
-      )}
-
-      {/* Orders */}
       {orders.length === 0 ? (
-        <div className="admin-orders-empty">
+        <div className="adm-empty">
           <h3>No orders found</h3>
-
-          <p>
-            There are no orders matching the selected filter.
-          </p>
+          <p>There are no orders matching the selected filter.</p>
         </div>
       ) : (
-        <div className="admin-orders-grid">
+        <div className="ord-grid">
+          {orders.map((order) => {
+            const currentIndex = statuses.indexOf(order.status);
 
-          {orders.map((order) => (
-            <div
-              key={order.id}
-              className="admin-order-card"
-            >
+            return (
+              <div key={order.id} className="adm-card ord-card">
+                <div className="ord-head">
+                  <h3>
+                    <Squiggle size={20} />
+                    Order #{order.id}
+                  </h3>
+                  <span className={`adm-pill adm-status-${order.status}`}>
+                    {capitalize(order.status)}
+                  </span>
+                </div>
 
-              {/* Order heading */}
-              <div className="admin-order-card-header">
-                <h3>
-                  Order #{order.id}
-                </h3>
+                <div className="ord-kv">
+                  <span>Token</span>
+                  <strong>{order.token_number}</strong>
+                </div>
 
-                {/* Status badge */}
-                <span
-                  className={`admin-order-status ${getStatusClass(
-                    order.status
-                  )}`}
-                >
-                  {order.status}
+                <div className="ord-kv">
+                  <span>Total</span>
+                  <strong>₹{order.total_amount}</strong>
+                </div>
+
+                <div className="ord-kv">
+                  <span>Payment Method</span>
+                  <strong>
+                    {order.payment_method
+                      ? order.payment_method.toUpperCase()
+                      : "N/A"}
+                  </strong>
+                </div>
+
+                <div className="ord-kv">
+                  <span>Payment Status</span>
+                  <strong
+                    className={
+                      order.payment_status === "paid"
+                        ? "ord-pay-paid"
+                        : order.payment_status === "pending"
+                        ? "ord-pay-pending"
+                        : ""
+                    }
+                  >
+                    {order.payment_status
+                      ? capitalize(order.payment_status)
+                      : "N/A"}
+                  </strong>
+                </div>
+
+                <label className="ord-select-label">
+                  Update Status:
+                  <select
+                    className="adm-select ord-select"
+                    value={order.status}
+                    onChange={(e) => updateStatus(order.id, e.target.value)}
+                  >
+                    {statuses.map((status, index) => (
+                      <option
+                        key={status}
+                        value={status}
+                        disabled={
+                          currentIndex !== -1 &&
+                          (index < currentIndex || index > currentIndex + 1)
+                        }
+                      >
+                        {capitalize(status)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <span className="ord-leaf">
+                  <LeafIcon size={22} />
                 </span>
               </div>
-
-              {/* Order details */}
-              <div className="admin-order-details">
-
-  <div className="admin-order-detail">
-    <span>Token</span>
-    <strong>{order.token_number}</strong>
-  </div>
-
-  <div className="admin-order-detail">
-    <span>Total</span>
-    <strong>₹{order.total_amount}</strong>
-  </div>
-
-  <div className="admin-order-detail">
-    <span>Payment Method</span>
-    <strong>
-      {order.payment_method
-        ? order.payment_method.toUpperCase()
-        : "N/A"}
-    </strong>
-  </div>
-
-  <div className="admin-order-detail">
-    <span>Payment Status</span>
-    <strong
-      className={
-        order.payment_status === "paid"
-          ? "payment-status-paid"
-          : order.payment_status === "pending"
-          ? "payment-status-pending"
-          : ""
-      }
-    >
-      {order.payment_status
-        ? order.payment_status.charAt(0).toUpperCase() +
-          order.payment_status.slice(1)
-        : "N/A"}
-    </strong>
-  </div>
-
-</div>
-
-              {/* Update status */}
-              <label className="admin-status-label">
-                Update Status:
-
-                <select
-                  className="admin-status-control"
-                  value={order.status}
-                  onChange={(e) =>
-                    updateStatus(
-                      order.id,
-                      e.target.value
-                    )
-                  }
-                >
-                  {statuses.map((status) => (
-                    <option
-                      key={status}
-                      value={status}
-                    >
-                      {status.charAt(0).toUpperCase() +
-                        status.slice(1)}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-            </div>
-          ))}
-
+            );
+          })}
         </div>
       )}
-    </div>
+    </AdminPage>
   );
 };
 
