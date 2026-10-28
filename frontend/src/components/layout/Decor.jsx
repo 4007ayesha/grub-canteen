@@ -1,4 +1,3 @@
-
 export function Squiggle({ flip = false, size = 28 }) {
   return (
     <svg

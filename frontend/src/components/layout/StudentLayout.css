@@ -131,6 +131,11 @@
   display: none;
 }
 
+/* logo inside the slide-in menu (mobile only) */
+.student-sidebar-logo {
+  display: none;
+}
+
 .student-sidebar-backdrop {
   display: none;
 }
@@ -170,6 +175,7 @@
   background: var(--color-primary-light);
   color: var(--color-primary-dark);
 }
+
 .student-nav-logout {
   margin-top: var(--space-sm);
   border-top: 1px solid var(--color-border);
@@ -225,8 +231,10 @@
     display: flex;
   }
 
+  /* z-index: auto lets the slide-in menu sit above the header */
   .student-body {
     margin-top: var(--space-md);
+    z-index: auto;
   }
 
   .student-sidebar {
@@ -235,7 +243,7 @@
     left: 0;
     height: 100vh;
     width: 260px;
-    padding-top: 64px;
+    padding-top: var(--space-md);
     border-radius: 0 24px 24px 0;
     transform: translateX(-100%);
     transition: transform 0.25s ease;
@@ -245,6 +253,13 @@
 
   .student-sidebar.open {
     transform: translateX(0);
+  }
+
+  .student-sidebar-logo {
+    display: block;
+    height: 52px;
+    width: auto;
+    margin-bottom: var(--space-md);
   }
 
   .student-sidebar-close {

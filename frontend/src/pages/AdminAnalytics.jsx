@@ -18,7 +18,83 @@ import {
   getPredictions,
   updatePredictionActual,
 } from "../api";
+import AdminPage, { AdminPageHeader } from "../components/layout/AdminPage";
+import { Squiggle, LeafIcon } from "../components/layout/Decor";
 import "./AdminAnalytics.css";
+
+const iconProps = {
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: "2",
+  strokeLinecap: "round",
+  strokeLinejoin: "round",
+};
+
+function ForkIcon({ size = 24 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" {...iconProps}>
+      <path d="M3 2v7c0 1.1.9 2 2 2h1a2 2 0 0 0 2-2V2" />
+      <path d="M6 11v11" />
+      <path d="M18 2a4 4 0 0 0-4 4v4h4" />
+      <path d="M18 10v12" />
+    </svg>
+  );
+}
+
+function HatIcon({ size = 24 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" {...iconProps}>
+      <path d="M6 14a4 4 0 1 1 1.5-7.7A4.5 4.5 0 0 1 16.5 6.3 4 4 0 1 1 18 14v5H6z" />
+      <line x1="6" y1="17" x2="18" y2="17" />
+    </svg>
+  );
+}
+
+function ClipboardIcon({ size = 24 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" {...iconProps}>
+      <rect x="4" y="3" width="16" height="18" rx="2" />
+      <path d="M8 1v4M16 1v4M8 11h8M8 15h5" />
+    </svg>
+  );
+}
+
+function TrashIcon({ size = 24 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" {...iconProps}>
+      <polyline points="3 6 5 6 21 6" />
+      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+      <path d="M10 11v6M14 11v6" />
+    </svg>
+  );
+}
+
+function LineChartIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" {...iconProps}>
+      <polyline points="3 17 9 11 13 15 21 7" />
+      <polyline points="15 7 21 7 21 13" />
+    </svg>
+  );
+}
+
+function BarChartIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" {...iconProps}>
+      <line x1="18" y1="20" x2="18" y2="10" />
+      <line x1="12" y1="20" x2="12" y2="4" />
+      <line x1="6" y1="20" x2="6" y2="14" />
+    </svg>
+  );
+}
+
+function StarIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="#E3A857" stroke="#E3A857" strokeWidth="1.5" strokeLinejoin="round">
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+    </svg>
+  );
+}
 
 function AdminAnalytics() {
   const { token } = useAuth();
@@ -52,8 +128,8 @@ function AdminAnalytics() {
   const [predictionFormError, setPredictionFormError] = useState("");
 
   const [actualInputs, setActualInputs] = useState({});
-const [savingActualId, setSavingActualId] = useState(null);
-const [actualError, setActualError] = useState("");
+  const [savingActualId, setSavingActualId] = useState(null);
+  const [actualError, setActualError] = useState("");
 
   useEffect(() => {
     const fetchAnalytics = async () => {
@@ -92,19 +168,14 @@ const [actualError, setActualError] = useState("");
           throw new Error("Failed to load analytics data.");
         }
 
-        const [
-          summaryData,
-          popularData,
-          trendData,
-          feedbackData,
-          wasteData,
-        ] = await Promise.all([
-          summaryResponse.json(),
-          popularResponse.json(),
-          trendResponse.json(),
-          feedbackResponse.json(),
-          wasteResponse.json(),
-        ]);
+        const [summaryData, popularData, trendData, feedbackData, wasteData] =
+          await Promise.all([
+            summaryResponse.json(),
+            popularResponse.json(),
+            trendResponse.json(),
+            feedbackResponse.json(),
+            wasteResponse.json(),
+          ]);
 
         setSummary(summaryData);
         setPopularItems(popularData);
@@ -140,9 +211,7 @@ const [actualError, setActualError] = useState("");
         setPredictions(savedPredictions);
       } catch (err) {
         console.error("Prediction data error:", err);
-        setPredictionsError(
-          "Unable to load predictions. Please try again."
-        );
+        setPredictionsError("Unable to load predictions. Please try again.");
       } finally {
         setPredictionsLoading(false);
       }
@@ -171,7 +240,7 @@ const [actualError, setActualError] = useState("");
   const submitPrediction = async (e) => {
     e.preventDefault();
 
-    if (predicting) return; // guard against double-click
+    if (predicting) return;
 
     try {
       setPredicting(true);
@@ -206,9 +275,7 @@ const [actualError, setActualError] = useState("");
       setPredictionResult(result);
       setPredictions((current) => [result, ...current]);
     } catch (err) {
-      setPredictionFormError(
-        err.message || "Unable to generate prediction."
-      );
+      setPredictionFormError(err.message || "Unable to generate prediction.");
     } finally {
       setPredicting(false);
     }
@@ -222,327 +289,255 @@ const [actualError, setActualError] = useState("");
   };
 
   const saveActualQty = async (predictionId) => {
-  const value = actualInputs[predictionId];
+    const value = actualInputs[predictionId];
 
-  if (value === undefined || value === "") return;
+    if (value === undefined || value === "") return;
 
-  const numValue = Number(value);
+    const numValue = Number(value);
 
-  if (isNaN(numValue) || numValue < 0) {
-    setActualError("Actual quantity must be a valid number, 0 or greater.");
-    return;
-  }
+    if (isNaN(numValue) || numValue < 0) {
+      setActualError("Actual quantity must be a valid number, 0 or greater.");
+      return;
+    }
 
-  try {
-    setActualError("");
-    setSavingActualId(predictionId);
+    try {
+      setActualError("");
+      setSavingActualId(predictionId);
 
-    const updated = await updatePredictionActual(
-      predictionId,
-      numValue,
-      token
-    );
+      const updated = await updatePredictionActual(
+        predictionId,
+        numValue,
+        token
+      );
 
-    setPredictions((current) =>
-      current.map((p) => (p.id === predictionId ? updated : p))
-    );
+      setPredictions((current) =>
+        current.map((p) => (p.id === predictionId ? updated : p))
+      );
 
-    setActualInputs((current) => {
-      const copy = { ...current };
-      delete copy[predictionId];
-      return copy;
-    });
-  } catch (err) {
-    setActualError(err.message || "Unable to save actual quantity.");
-  } finally {
-    setSavingActualId(null);
-  }
-};
+      setActualInputs((current) => {
+        const copy = { ...current };
+        delete copy[predictionId];
+        return copy;
+      });
+    } catch (err) {
+      setActualError(err.message || "Unable to save actual quantity.");
+    } finally {
+      setSavingActualId(null);
+    }
+  };
+
   if (loading) {
     return (
-      <div className="admin-analytics-page">
-        <div className="analytics-loading">
-          Loading analytics...
-        </div>
-      </div>
+      <AdminPage>
+        <p className="adm-status-text">Loading analytics...</p>
+      </AdminPage>
     );
   }
 
   if (error) {
     return (
-      <div className="admin-analytics-page">
-        <div className="analytics-error">
-          {error}
-        </div>
-      </div>
+      <AdminPage>
+        <div className="adm-error">{error}</div>
+      </AdminPage>
     );
   }
 
   return (
-    <div className="admin-analytics-page">
+    <AdminPage>
+      <AdminPageHeader
+        title="Analytics"
+        subtitle="Monitor orders, sales, customer feedback, and food waste."
+      />
 
-      {/* Header */}
-      <div className="admin-analytics-header">
-        <div>
-          <h1>Analytics</h1>
-          <p>
-            Monitor orders, sales, customer feedback, and food waste.
-          </p>
+      {/* Summary cards */}
+      <div className="ana-summary">
+        <div className="adm-card ana-stat">
+          <span className="ana-stat-icon">₹</span>
+          <div>
+            <span className="ana-stat-label">Total Revenue</span>
+            <strong className="ana-stat-value">
+              ₹{Number(summary?.total_revenue || 0).toFixed(2)}
+            </strong>
+          </div>
         </div>
-      </div>
 
-      {/* Summary Cards */}
-      <div className="analytics-summary-grid">
-
-        <div className="analytics-card summary-card">
-          <span className="summary-card-label">
-            Revenue
+        <div className="adm-card ana-stat">
+          <span className="ana-stat-icon">
+            <ForkIcon />
           </span>
-
-          <strong className="summary-card-value">
-            ₹{Number(summary?.total_revenue || 0).toFixed(2)}
-          </strong>
+          <div>
+            <span className="ana-stat-label">Total Orders</span>
+            <strong className="ana-stat-value">
+              {summary?.total_orders || 0}
+            </strong>
+          </div>
         </div>
 
-        <div className="analytics-card summary-card">
-          <span className="summary-card-label">
-            Total Orders
+        <div className="adm-card ana-stat">
+          <span className="ana-stat-icon">
+            <HatIcon />
           </span>
-
-          <strong className="summary-card-value">
-            {summary?.total_orders || 0}
-          </strong>
+          <div>
+            <span className="ana-stat-label">Pending Orders</span>
+            <strong className="ana-stat-value">
+              {summary?.pending_orders || 0}
+            </strong>
+          </div>
         </div>
 
-        <div className="analytics-card summary-card">
-          <span className="summary-card-label">
-            Pending Orders
+        <div className="adm-card ana-stat">
+          <span className="ana-stat-icon">
+            <ClipboardIcon />
           </span>
-
-          <strong className="summary-card-value">
-            {summary?.pending_orders || 0}
-          </strong>
+          <div>
+            <span className="ana-stat-label">Menu Items</span>
+            <strong className="ana-stat-value">
+              {summary?.total_menu_items || 0}
+            </strong>
+          </div>
         </div>
-
-        <div className="analytics-card summary-card">
-          <span className="summary-card-label">
-            Menu Items
-          </span>
-
-          <strong className="summary-card-value">
-            {summary?.total_menu_items || 0}
-          </strong>
-        </div>
-
       </div>
 
       {/* Charts */}
-      <div className="analytics-charts-grid">
-
-        {/* Order Trend */}
-        <div className="analytics-card chart-card">
-
-          <div className="chart-header">
-            <div>
-              <h2>Order Trend</h2>
-              <p>Orders placed by date</p>
-            </div>
-          </div>
+      <div className="ana-charts">
+        <div className="adm-card ana-chart-card">
+          <h2 className="ana-card-title">
+            <LineChartIcon />
+            Order Trend
+          </h2>
+          <p className="ana-card-sub">Orders placed by date.</p>
 
           {orderTrend.length === 0 ? (
-            <div className="analytics-empty">
-              No order data available yet.
-            </div>
+            <div className="ana-empty">No order data available yet.</div>
           ) : (
-            <div className="chart-container">
-
-              <ResponsiveContainer width="100%" height={300}>
-
-                <LineChart data={orderTrend}>
-
-                  <CartesianGrid strokeDasharray="3 3" />
-
-                  <XAxis
-                    dataKey="day"
-                    tick={{ fontSize: 12 }}
-                    tickMargin={10}
-                  />
-
-                  <YAxis
-                    allowDecimals={false}
-                  />
-
-                  <Tooltip />
-
-                  <Line
-                    type="monotone"
-                    dataKey="count"
-                    stroke="var(--color-primary)"
-                    strokeWidth={3}
-                    dot={{ r: 4 }}
-                  />
-
-                </LineChart>
-
-              </ResponsiveContainer>
-
-            </div>
+            <ResponsiveContainer width="100%" height={260}>
+              <LineChart data={orderTrend}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0d5dc" />
+                <XAxis dataKey="day" tick={{ fontSize: 12 }} tickMargin={10} />
+                <YAxis allowDecimals={false} />
+                <Tooltip />
+                <Line
+                  type="monotone"
+                  dataKey="count"
+                  stroke="#E96F91"
+                  strokeWidth={3}
+                  dot={{ r: 4, fill: "#E96F91" }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
           )}
-
         </div>
 
-        {/* Popular Items */}
-        <div className="analytics-card chart-card">
-
-          <div className="chart-header">
-            <div>
-              <h2>Popular Items</h2>
-              <p>Top 5 best-selling items</p>
-            </div>
-          </div>
+        <div className="adm-card ana-chart-card">
+          <h2 className="ana-card-title">
+            <BarChartIcon />
+            Popular Items
+          </h2>
+          <p className="ana-card-sub">Top 5 best-selling items.</p>
 
           {popularItems.length === 0 ? (
-            <div className="analytics-empty">
-              No sales data available yet.
-            </div>
+            <div className="ana-empty">No sales data available yet.</div>
           ) : (
-            <div className="chart-container">
-
-              <ResponsiveContainer width="100%" height={300}>
-
-                <BarChart data={popularItems}>
-
-                  <CartesianGrid strokeDasharray="3 3" />
-
-                  <XAxis
-                    dataKey="name"
-                    tick={{ fontSize: 12 }}
-                    angle={-15}
-                    textAnchor="end"
-                    height={60}
-                  />
-
-                  <YAxis
-                    allowDecimals={false}
-                  />
-
-                  <Tooltip />
-
-                  <Bar
-                    dataKey="total_sold"
-                    fill="var(--color-secondary)"
-                    radius={[8, 8, 0, 0]}
-                  />
-
-                </BarChart>
-
-              </ResponsiveContainer>
-
-            </div>
+            <ResponsiveContainer width="100%" height={260}>
+              <BarChart data={popularItems}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0d5dc" />
+                <XAxis
+                  dataKey="name"
+                  tick={{ fontSize: 12 }}
+                  angle={-15}
+                  textAnchor="end"
+                  height={60}
+                />
+                <YAxis allowDecimals={false} />
+                <Tooltip />
+                <Bar
+                  dataKey="total_sold"
+                  fill="#F29BB4"
+                  radius={[8, 8, 0, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
           )}
-
         </div>
-
       </div>
 
-      {/* Feedback + Waste */}
-      <div className="analytics-info-grid">
+      {/* Food Waste */}
+      <section>
+        <h2 className="adm-section-title ana-section-gap">
+          <Squiggle size={26} />
+          Food Waste
+        </h2>
 
-        {/* Customer Feedback */}
-        <div className="analytics-card info-card">
-
-          <div className="info-card-header">
-            <h2>Customer Feedback</h2>
-
-            <span className="info-card-icon">
-              ⭐
+        <div className="ana-waste-grid">
+          <div className="adm-card ana-waste-tile">
+            <span className="ana-waste-icon">
+              <HatIcon size={30} />
             </span>
+            <span className="ana-waste-label">Prepared</span>
+            <strong>{waste?.total_prepared || 0}</strong>
           </div>
 
-          <div className="feedback-content">
-
-            <strong>
-              {Number(
-                feedback?.average_rating || 0
-              ).toFixed(2)}
-
-              <span>/5</span>
-            </strong>
-
-            <p>
-              Based on{" "}
-              {feedback?.total_feedback || 0}{" "}
-              feedback submissions
-            </p>
-
-          </div>
-
-        </div>
-
-        {/* Food Waste */}
-        <div className="analytics-card info-card">
-
-          <div className="info-card-header">
-            <h2>Food Waste</h2>
-
-            <span className="info-card-icon">
-              ♻️
+          <div className="adm-card ana-waste-tile">
+            <span className="ana-waste-icon">
+              <ForkIcon size={30} />
             </span>
+            <span className="ana-waste-label">Sold</span>
+            <strong>{waste?.total_sold || 0}</strong>
           </div>
 
-          <div className="waste-stats">
-
-            <div>
-              <span>Prepared</span>
-              <strong>
-                {waste?.total_prepared || 0}
-              </strong>
-            </div>
-
-            <div>
-              <span>Sold</span>
-              <strong>
-                {waste?.total_sold || 0}
-              </strong>
-            </div>
-
-            <div>
-              <span>Wasted</span>
-              <strong>
-                {waste?.total_wasted || 0}
-              </strong>
-            </div>
-
-            <div>
-              <span>Waste Rate</span>
-              <strong>
-                {Number(
-                  waste?.waste_percentage || 0
-                ).toFixed(2)}
-                %
-              </strong>
-            </div>
-
+          <div className="adm-card ana-waste-tile">
+            <span className="ana-waste-icon">
+              <TrashIcon size={30} />
+            </span>
+            <span className="ana-waste-label">Wasted</span>
+            <strong>{waste?.total_wasted || 0}</strong>
           </div>
 
+          <div className="adm-card ana-waste-tile">
+            <span className="ana-waste-icon">
+              <LeafIcon size={30} />
+            </span>
+            <span className="ana-waste-label">Waste Rate</span>
+            <strong>{Number(waste?.waste_percentage || 0).toFixed(2)}%</strong>
+          </div>
         </div>
+      </section>
 
-      </div>
+      {/* Customer Feedback */}
+      <section>
+        <h2 className="adm-section-title ana-section-gap">
+          <Squiggle size={26} />
+          Customer Feedback
+        </h2>
 
-      {/* Phase 16: Demand Prediction */}
-      <section className="analytics-card prediction-section">
-
-        <div className="prediction-header">
-          <h2>Demand Prediction</h2>
-          <p>AI-powered food demand forecasting</p>
+        <div className="adm-card ana-feedback">
+          <div className="ana-feedback-score">
+            <strong>{Number(feedback?.average_rating || 0).toFixed(2)}</strong>
+            <span>/5</span>
+            <StarIcon />
+          </div>
+          <p>
+            Based on {feedback?.total_feedback || 0} feedback submissions
+          </p>
         </div>
+      </section>
 
-        <form className="prediction-form" onSubmit={submitPrediction}>
+      {/* Demand Prediction */}
+      <section className="adm-card ana-pred">
+        <h2 className="adm-section-title">
+          <Squiggle size={26} />
+          Demand Prediction
+        </h2>
+        <p className="ana-card-sub ana-pred-sub">
+          AI-powered food demand forecasting.
+        </p>
 
-          <div className="prediction-field">
+        <form className="ana-pred-form" onSubmit={submitPrediction}>
+          <div className="adm-field">
             <label htmlFor="pred-menu-item">Menu Item</label>
             <select
               id="pred-menu-item"
+              className="adm-select"
               name="menu_item_id"
               value={predictionForm.menu_item_id}
               onChange={handlePredictionFormChange}
@@ -557,10 +552,11 @@ const [actualError, setActualError] = useState("");
             </select>
           </div>
 
-          <div className="prediction-field">
+          <div className="adm-field">
             <label htmlFor="pred-date">Date</label>
             <input
               id="pred-date"
+              className="adm-input"
               type="date"
               name="date"
               value={predictionForm.date}
@@ -569,10 +565,11 @@ const [actualError, setActualError] = useState("");
             />
           </div>
 
-          <div className="prediction-field">
+          <div className="adm-field">
             <label htmlFor="pred-prev-sales">Previous Day Sales</label>
             <input
               id="pred-prev-sales"
+              className="adm-input"
               type="number"
               min="0"
               name="previous_day_sales"
@@ -582,22 +579,23 @@ const [actualError, setActualError] = useState("");
             />
           </div>
 
-          <div className="prediction-field">
+          <div className="adm-field">
             <label htmlFor="pred-avg">7-Day Average</label>
             <input
               id="pred-avg"
+              className="adm-input"
               type="number"
               min="0"
               step="0.1"
               name="seven_day_avg"
+              placeholder="Enter average"
               value={predictionForm.seven_day_avg}
               onChange={handlePredictionFormChange}
               required
             />
           </div>
 
-          <div className="prediction-field prediction-field-checkbox">
-            <label htmlFor="pred-holiday">Holiday</label>
+          <label className="ana-check" htmlFor="pred-holiday">
             <input
               id="pred-holiday"
               type="checkbox"
@@ -605,10 +603,10 @@ const [actualError, setActualError] = useState("");
               checked={predictionForm.is_holiday}
               onChange={handlePredictionFormChange}
             />
-          </div>
+            Holiday
+          </label>
 
-          <div className="prediction-field prediction-field-checkbox">
-            <label htmlFor="pred-event">College Event</label>
+          <label className="ana-check" htmlFor="pred-event">
             <input
               id="pred-event"
               type="checkbox"
@@ -616,55 +614,50 @@ const [actualError, setActualError] = useState("");
               checked={predictionForm.is_college_event}
               onChange={handlePredictionFormChange}
             />
-          </div>
+            College Event
+          </label>
 
           {predictionFormError && (
-            <div className="prediction-form-error">
-              {predictionFormError}
-            </div>
+            <div className="adm-error ana-pred-wide">{predictionFormError}</div>
           )}
 
           <button
             type="submit"
-            className="prediction-submit-btn"
+            className="adm-btn ana-pred-submit"
             disabled={predicting}
           >
             {predicting ? "Predicting..." : "Predict Demand"}
           </button>
-
         </form>
 
         {predictionResult && (
-          <div className="prediction-result">
-            <span className="prediction-result-label">
-              AI Demand Prediction
-            </span>
-            <strong className="prediction-result-value">
-              {predictionResult.predicted_qty} items
-            </strong>
-            <span className="prediction-result-meta">
+          <div className="ana-pred-result">
+            <span>AI Demand Prediction</span>
+            <strong>{predictionResult.predicted_qty} items</strong>
+            <small>
               For {getItemName(predictionResult.menu_item_id)} ·{" "}
               {predictionResult.date}
-            </span>
+            </small>
           </div>
         )}
 
-        <div className="prediction-history">
-  <h3>Prediction History</h3>
+        <div className="ana-pred-history">
+          <h3 className="ana-card-title">
+            <Squiggle size={22} />
+            Prediction History
+          </h3>
 
-  {actualError && (
-    <div className="analytics-error">{actualError}</div>
-  )}
+          {actualError && <div className="adm-error">{actualError}</div>}
 
-  {predictionsLoading ? (
-            <div className="analytics-loading">Loading predictions...</div>
+          {predictionsLoading ? (
+            <p className="adm-status-text">Loading predictions...</p>
           ) : predictionsError ? (
-            <div className="analytics-error">{predictionsError}</div>
+            <div className="adm-error">{predictionsError}</div>
           ) : predictions.length === 0 ? (
-            <div className="analytics-empty">No predictions yet.</div>
+            <div className="ana-empty">No predictions yet.</div>
           ) : (
-            <div className="prediction-table-wrapper">
-              <table className="prediction-table">
+            <div className="adm-table-wrap ana-table-card">
+              <table className="adm-table">
                 <thead>
                   <tr>
                     <th>Food Item</th>
@@ -684,8 +677,9 @@ const [actualError, setActualError] = useState("");
                         {p.actual_qty !== null && p.actual_qty !== undefined ? (
                           p.actual_qty
                         ) : (
-                          <div className="prediction-actual-input">
+                          <div className="ana-actual">
                             <input
+                              className="adm-input"
                               type="number"
                               min="0"
                               placeholder="Enter actual"
@@ -696,6 +690,7 @@ const [actualError, setActualError] = useState("");
                             />
                             <button
                               type="button"
+                              className="adm-btn"
                               disabled={savingActualId === p.id}
                               onClick={() => saveActualQty(p.id)}
                             >
@@ -718,10 +713,8 @@ const [actualError, setActualError] = useState("");
             </div>
           )}
         </div>
-
       </section>
-
-    </div>
+    </AdminPage>
   );
 }
 

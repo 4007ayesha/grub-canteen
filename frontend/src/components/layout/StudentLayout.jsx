@@ -179,6 +179,11 @@ function StudentLayout() {
           >
             <CloseIcon />
           </button>
+          <img
+  src={logo}
+  alt="Grub Canteen"
+  className="student-sidebar-logo"
+/>
 
           <nav className="student-nav" onClick={closeMenu}>
             <NavLink to="/home">

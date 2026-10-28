@@ -1,28 +1,30 @@
-
-import React from "react";
+import heroRight from "../../assets/home-hero-right.png";
+import { Squiggle } from "./Decor";
 import "./AdminPage.css";
 
-function AdminPage({
-  title,
-  subtitle,
-  children,
-  className = "",
-}) {
+function AdminPage({ children, lamp = true }) {
   return (
-    <section className={`admin-page ${className}`.trim()}>
-      <header className="admin-page-header">
-        <div>
-          <h1 className="admin-page-title">{title}</h1>
-          {subtitle && (
-            <p className="admin-page-subtitle">{subtitle}</p>
-          )}
+    <div className="adm-page">
+      {lamp && (
+        <div className="adm-lamp" aria-hidden="true">
+          <img src={heroRight} alt="" />
         </div>
-      </header>
+      )}
+      {children}
+    </div>
+  );
+}
 
-      <div className="admin-page-content">
-        {children}
-      </div>
-    </section>
+export function AdminPageHeader({ title, subtitle }) {
+  return (
+    <div className="adm-header">
+      <h1>
+        <Squiggle size={34} />
+        {title}
+        <Squiggle size={34} flip />
+      </h1>
+      {subtitle && <p>{subtitle}</p>}
+    </div>
   );
 }
 
