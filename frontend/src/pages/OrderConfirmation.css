@@ -1,77 +1,208 @@
-.order-confirmation-page {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 24px;
-  background-color: var(--color-background);
+.oc-page {
+  position: relative;
+  padding-bottom: var(--space-2xl);
 }
 
-.order-confirmation-card {
+.oc-card {
+  position: relative;
+  z-index: 1;
   width: 100%;
-  max-width: 450px;
-  padding: 40px;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 32px 40px 40px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 24px;
   text-align: center;
-  background-color: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
-.success-icon {
-  font-size: 48px;
-  margin-bottom: 12px;
+.oc-icon-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: var(--space-sm);
 }
 
-.order-confirmation-card h1 {
+.oc-leaf {
+  display: flex;
   margin-bottom: 10px;
-  color: #333;
 }
 
-.success-message {
-  margin-bottom: 28px;
-  color: #666;
+.oc-leaf-left {
+  transform: rotate(-12deg);
 }
 
-.order-token {
-  padding: 20px;
-  margin-bottom: 24px;
-  border-radius: 12px;
-  background-color: var(--color-secondary);
+.oc-leaf-right {
+  transform: scaleX(-1) rotate(-12deg);
 }
 
-.order-token p {
-  margin: 0 0 8px;
-  font-size: 14px;
+.oc-card h1 {
+  margin: var(--space-sm) 0 var(--space-xs);
+  color: var(--color-text);
+  font-size: 40px;
+  font-weight: 700;
+}
+
+.oc-lead {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-lg);
+}
+
+.oc-sub {
+  margin: 6px 0 var(--space-lg);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-style: italic;
+}
+
+/* token + total row */
+.oc-summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-lg);
+  padding: var(--space-md) var(--space-lg);
+  border: 1px solid var(--color-primary-light);
+  border-radius: 20px;
+  background: rgba(247, 197, 210, 0.12);
+}
+
+.oc-token {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 190px;
+  padding: 14px 24px;
+  border-radius: 16px;
+  background: rgba(145, 169, 140, 0.3);
+}
+
+.oc-token span {
+  color: var(--color-text);
+  font-size: 13px;
   font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
-.order-token h2 {
-  margin: 0;
-  font-size: 36px;
+.oc-token strong {
+  color: var(--color-text);
+  font-size: 34px;
   letter-spacing: 2px;
 }
 
-.order-details {
-  margin-bottom: 28px;
-  font-size: 18px;
+.oc-divider {
+  align-self: stretch;
+  width: 1px;
+  background: var(--color-border);
 }
 
-.order-details p {
-  margin: 10px 0;
+.oc-meta {
+  flex: 1;
+  text-align: left;
 }
 
-.back-to-menu {
-  display: inline-block;
-  padding: 12px 24px;
-  border-radius: 8px;
-  background-color: var(--color-primary);
-  color: white;
-  text-decoration: none;
+.oc-meta p {
+  margin: 6px 0;
+  color: var(--color-text);
+  font-size: var(--font-size-md);
+}
+
+.oc-total strong {
+  color: var(--color-primary);
+  font-size: 28px;
+}
+
+.oc-status-paid {
+  color: #3e6b3a;
   font-weight: 600;
-  transition: opacity 0.2s ease;
 }
 
-.back-to-menu:hover {
-  opacity: 0.85;
+.oc-status-pending {
+  color: #a0651a;
+  font-weight: 600;
+}
+
+/* buttons */
+.oc-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+}
+
+.oc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-width: 220px;
+  padding: 14px 28px;
+  border-radius: 999px;
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.oc-btn:hover {
+  transform: translateY(-1px);
+}
+
+.oc-btn-primary {
+  background: var(--color-accent);
+  color: white;
+}
+
+.oc-btn-primary:hover {
+  background: var(--color-primary);
+}
+
+.oc-btn-soft {
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
+.oc-btn-soft:hover {
+  background: #f3b3c5;
+}
+
+@media (max-width: 640px) {
+  .oc-card {
+    padding: 24px 16px 28px;
+  }
+
+  .oc-card h1 {
+    font-size: 30px;
+  }
+
+  .oc-summary {
+    flex-direction: column;
+    gap: var(--space-md);
+    padding: var(--space-md);
+  }
+
+  .oc-token {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .oc-divider {
+    width: 100%;
+    height: 1px;
+    align-self: auto;
+  }
+
+  .oc-meta {
+    width: 100%;
+    text-align: center;
+  }
+
+  .oc-btn {
+    width: 100%;
+    min-width: 0;
+  }
 }
