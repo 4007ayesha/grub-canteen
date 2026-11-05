@@ -7,15 +7,11 @@ import "./AdminInventory.css";
 const AdminInventory = () => {
   const { token } = useAuth();
 
-  const [inventory, setInventory] = useState([]);
   const [wasteRecords, setWasteRecords] = useState([]);
 
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-
-  // Stock input values
-  const [stockInputs, setStockInputs] = useState({});
 
   // Waste form
   const [wasteForm, setWasteForm] = useState({
@@ -25,38 +21,6 @@ const AdminInventory = () => {
     sold_qty: "",
     wasted_qty: "",
   });
-
-  // Fetch inventory
-  const fetchInventory = async () => {
-    try {
-      const response = await fetch("http://localhost:8000/inventory/", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Unable to fetch inventory");
-      }
-
-      const data = await response.json();
-
-      setInventory(data);
-
-      const inputs = {};
-
-      data.forEach((item) => {
-        inputs[item.menu_item_id] = {
-          current_stock: item.current_stock,
-          min_threshold: item.min_threshold,
-        };
-      });
-
-      setStockInputs(inputs);
-    } catch (err) {
-      setError("Unable to load inventory.");
-    }
-  };
 
   // Fetch waste records
   const fetchWasteRecords = async () => {
@@ -86,77 +50,13 @@ const AdminInventory = () => {
       setLoading(true);
       setError("");
 
-      await Promise.all([fetchInventory(), fetchWasteRecords()]);
+      await fetchWasteRecords();
 
       setLoading(false);
     };
 
     loadData();
   }, [token]);
-
-  // Handle stock input changes
-  const handleStockChange = (menuItemId, field, value) => {
-    setStockInputs((current) => ({
-      ...current,
-      [menuItemId]: {
-        ...current[menuItemId],
-        [field]: value,
-      },
-    }));
-  };
-
-  // Update inventory
-  const updateInventory = async (menuItemId) => {
-    try {
-      setMessage("");
-      setError("");
-
-      const input = stockInputs[menuItemId];
-
-      if (!input) return;
-
-      const currentStock = Number(input.current_stock);
-      const minThreshold = Number(input.min_threshold);
-
-      if (currentStock < 0 || minThreshold < 0) {
-        setError("Stock and minimum threshold cannot be negative.");
-        return;
-      }
-
-      const response = await fetch(
-        `http://localhost:8000/inventory/${menuItemId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            current_stock: currentStock,
-            min_threshold: minThreshold,
-          }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.detail || "Unable to update inventory");
-      }
-
-      setInventory((currentInventory) =>
-        currentInventory.map((item) =>
-          item.menu_item_id === menuItemId ? data : item
-        )
-      );
-
-      setMessage(
-        `Inventory for menu item #${menuItemId} updated successfully.`
-      );
-    } catch (err) {
-      setError(err.message || "Unable to update inventory.");
-    }
-  };
 
   // Handle waste form changes
   const handleWasteChange = (e) => {
@@ -230,7 +130,7 @@ const AdminInventory = () => {
   if (loading) {
     return (
       <AdminPage>
-        <p className="adm-status-text">Loading inventory...</p>
+        <p className="adm-status-text">Loading waste records...</p>
       </AdminPage>
     );
   }
@@ -239,213 +139,101 @@ const AdminInventory = () => {
     <AdminPage>
       <AdminPageHeader
         title="Inventory Management"
-        subtitle="Monitor stock levels and record daily food waste."
+        subtitle="Record daily food waste and review the history."
       />
 
       {message && <div className="adm-message">{message}</div>}
       {error && <div className="adm-error">{error}</div>}
 
-      <div className="inv-grid">
-        {/* Current Inventory */}
-        <section className="adm-card inv-panel">
-          <h2 className="adm-section-title">
-            <Squiggle size={24} />
-            Current Inventory
-          </h2>
-          <p className="inv-sub">
-            Items at or below their minimum threshold are marked as low stock.
-          </p>
+      {/* Record Waste */}
+      <section className="adm-card inv-panel">
+        <h2 className="adm-section-title">
+          <Squiggle size={24} />
+          Record Daily Waste
+        </h2>
+        <p className="inv-sub">
+          Record how much food was prepared, sold, and wasted.
+        </p>
 
-          {inventory.length === 0 ? (
-            <div className="adm-empty">
-              <h3>No inventory records found</h3>
-              <p>Add inventory using the backend or update an existing menu item.</p>
-            </div>
-          ) : (
-            <div className="inv-list">
-              {inventory.map((item) => {
-                const isOutOfStock = item.current_stock === 0;
-                const isLowStock = item.current_stock <= item.min_threshold;
+        <form className="inv-waste-form" onSubmit={submitWaste}>
+          <div className="adm-field">
+            <label htmlFor="menu-item-id">Menu Item ID</label>
+            <input
+              id="menu-item-id"
+              className="adm-input"
+              type="number"
+              name="menu_item_id"
+              min="1"
+              placeholder="Enter ID"
+              value={wasteForm.menu_item_id}
+              onChange={handleWasteChange}
+              required
+            />
+          </div>
 
-                const stockInput = stockInputs[item.menu_item_id] || {
-                  current_stock: item.current_stock,
-                  min_threshold: item.min_threshold,
-                };
+          <div className="adm-field">
+            <label htmlFor="waste-date">Date</label>
+            <input
+              id="waste-date"
+              className="adm-input"
+              type="date"
+              name="date"
+              value={wasteForm.date}
+              onChange={handleWasteChange}
+              required
+            />
+          </div>
 
-                let badgeClass = "inv-badge-ok";
-                let badgeText = "In Stock";
+          <div className="adm-field">
+            <label htmlFor="prepared-qty">Prepared Quantity</label>
+            <input
+              id="prepared-qty"
+              className="adm-input"
+              type="number"
+              name="prepared_qty"
+              min="0"
+              placeholder="Enter quantity"
+              value={wasteForm.prepared_qty}
+              onChange={handleWasteChange}
+              required
+            />
+          </div>
 
-                if (isOutOfStock) {
-                  badgeClass = "inv-badge-out";
-                  badgeText = "Out of Stock";
-                } else if (isLowStock) {
-                  badgeClass = "inv-badge-low";
-                  badgeText = "Low Stock";
-                }
+          <div className="adm-field">
+            <label htmlFor="sold-qty">Sold Quantity</label>
+            <input
+              id="sold-qty"
+              className="adm-input"
+              type="number"
+              name="sold_qty"
+              min="0"
+              placeholder="Enter quantity"
+              value={wasteForm.sold_qty}
+              onChange={handleWasteChange}
+              required
+            />
+          </div>
 
-                return (
-                  <div key={item.id} className="inv-item">
-                    <div className="inv-item-head">
-                      <h3>Menu Item #{item.menu_item_id}</h3>
-                      <span className={`inv-badge ${badgeClass}`}>
-                        {badgeText}
-                      </span>
-                    </div>
+          <div className="adm-field">
+            <label htmlFor="wasted-qty">Wasted Quantity</label>
+            <input
+              id="wasted-qty"
+              className="adm-input"
+              type="number"
+              name="wasted_qty"
+              min="0"
+              placeholder="Enter quantity"
+              value={wasteForm.wasted_qty}
+              onChange={handleWasteChange}
+              required
+            />
+          </div>
 
-                    <div className="inv-kv">
-                      <span>Current Stock</span>
-                      <strong>{item.current_stock}</strong>
-                    </div>
-
-                    <div className="inv-kv">
-                      <span>Minimum Threshold</span>
-                      <strong>{item.min_threshold}</strong>
-                    </div>
-
-                    {isLowStock && (
-                      <div className="inv-warning">
-                        Stock is at or below the minimum threshold.
-                      </div>
-                    )}
-
-                    <div className="adm-field">
-                      <label>Current Stock</label>
-                      <input
-                        className="adm-input"
-                        type="number"
-                        min="0"
-                        value={stockInput.current_stock}
-                        onChange={(e) =>
-                          handleStockChange(
-                            item.menu_item_id,
-                            "current_stock",
-                            e.target.value
-                          )
-                        }
-                      />
-                    </div>
-
-                    <div className="adm-field">
-                      <label>Minimum Threshold</label>
-                      <input
-                        className="adm-input"
-                        type="number"
-                        min="0"
-                        value={stockInput.min_threshold}
-                        onChange={(e) =>
-                          handleStockChange(
-                            item.menu_item_id,
-                            "min_threshold",
-                            e.target.value
-                          )
-                        }
-                      />
-                    </div>
-
-                    <button
-                      type="button"
-                      className="adm-btn"
-                      onClick={() => updateInventory(item.menu_item_id)}
-                    >
-                      Update Stock
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </section>
-
-        {/* Record Waste */}
-        <section className="adm-card inv-panel">
-          <h2 className="adm-section-title">
-            <Squiggle size={24} />
-            Record Daily Waste
-          </h2>
-          <p className="inv-sub">
-            Record how much food was prepared, sold, and wasted.
-          </p>
-
-          <form className="inv-waste-form" onSubmit={submitWaste}>
-            <div className="adm-field">
-              <label htmlFor="menu-item-id">Menu Item ID</label>
-              <input
-                id="menu-item-id"
-                className="adm-input"
-                type="number"
-                name="menu_item_id"
-                min="1"
-                placeholder="Enter ID"
-                value={wasteForm.menu_item_id}
-                onChange={handleWasteChange}
-                required
-              />
-            </div>
-
-            <div className="adm-field">
-              <label htmlFor="waste-date">Date</label>
-              <input
-                id="waste-date"
-                className="adm-input"
-                type="date"
-                name="date"
-                value={wasteForm.date}
-                onChange={handleWasteChange}
-                required
-              />
-            </div>
-
-            <div className="adm-field">
-              <label htmlFor="prepared-qty">Prepared Quantity</label>
-              <input
-                id="prepared-qty"
-                className="adm-input"
-                type="number"
-                name="prepared_qty"
-                min="0"
-                placeholder="Enter quantity"
-                value={wasteForm.prepared_qty}
-                onChange={handleWasteChange}
-                required
-              />
-            </div>
-
-            <div className="adm-field">
-              <label htmlFor="sold-qty">Sold Quantity</label>
-              <input
-                id="sold-qty"
-                className="adm-input"
-                type="number"
-                name="sold_qty"
-                min="0"
-                placeholder="Enter quantity"
-                value={wasteForm.sold_qty}
-                onChange={handleWasteChange}
-                required
-              />
-            </div>
-
-            <div className="adm-field">
-              <label htmlFor="wasted-qty">Wasted Quantity</label>
-              <input
-                id="wasted-qty"
-                className="adm-input"
-                type="number"
-                name="wasted_qty"
-                min="0"
-                placeholder="Enter quantity"
-                value={wasteForm.wasted_qty}
-                onChange={handleWasteChange}
-                required
-              />
-            </div>
-
-            <button type="submit" className="adm-btn">
-              Record Waste
-            </button>
-          </form>
-        </section>
-      </div>
+          <button type="submit" className="adm-btn inv-submit">
+            Record Waste
+          </button>
+        </form>
+      </section>
 
       {/* Waste History */}
       <section className="adm-card inv-history">

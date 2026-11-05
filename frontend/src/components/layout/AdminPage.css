@@ -6,9 +6,14 @@
   padding-bottom: var(--space-2xl);
 }
 
-.adm-page > :not(.adm-lamp) {
+.adm-page > :not(.adm-lamp):not(.ui-modal-overlay) {
   position: relative;
   z-index: 1;
+}
+
+/* popups render on the page body, above the header and sidebar */
+body > .ui-modal-overlay {
+  z-index: 3000;
 }
 
 /* lamp + leaf sprig hanging from the header */
