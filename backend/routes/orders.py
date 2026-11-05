@@ -17,7 +17,6 @@ from backend.models import (
     OrderItem,
     Payment,
     MenuItem,
-    Inventory,
 )
 from backend.schemas import OrderCreate, OrderOut
 from backend.dependencies import get_current_user
@@ -47,9 +46,7 @@ def generate_token():
     )
 
 
-def order_response(
-    order,
-):
+def order_response(order):
     """
     Converts an Order object into the response format.
     Payment information is stored directly on the Order.
@@ -197,14 +194,12 @@ def create_order(
             )
 
         # ----------------------------------------------------
-        # Validate menu items and stock
+        # Validate menu items (without stock management)
         # ----------------------------------------------------
 
-        inventory_records = []
+        order_records = []
 
-        calculated_total = Decimal(
-            "0.00"
-        )
+        calculated_total = Decimal("0.00")
 
         for item in order.items:
 
@@ -220,8 +215,7 @@ def create_order(
             menu_item = (
                 db.query(MenuItem)
                 .filter(
-                    MenuItem.id
-                    == item.menu_item_id
+                    MenuItem.id == item.menu_item_id
                 )
                 .first()
             )
@@ -245,38 +239,6 @@ def create_order(
                     ),
                 )
 
-            inventory = (
-                db.query(Inventory)
-                .filter(
-                    Inventory.menu_item_id
-                    == item.menu_item_id
-                )
-                .first()
-            )
-
-            if not inventory:
-                raise HTTPException(
-                    status_code=400,
-                    detail=(
-                        f"Stock not configured "
-                        f"for {menu_item.name}"
-                    ),
-                )
-
-            if (
-                inventory.current_stock
-                < item.quantity
-            ):
-                raise HTTPException(
-                    status_code=400,
-                    detail=(
-                        f"Not enough stock for "
-                        f"{menu_item.name}. "
-                        f"Available stock: "
-                        f"{inventory.current_stock}"
-                    ),
-                )
-
             # Use the actual price from the database.
             actual_price = Decimal(
                 str(menu_item.price)
@@ -286,9 +248,8 @@ def create_order(
                 actual_price * item.quantity
             )
 
-            inventory_records.append(
+            order_records.append(
                 {
-                    "inventory": inventory,
                     "menu_item": menu_item,
                     "quantity": item.quantity,
                     "price": actual_price,
@@ -314,7 +275,7 @@ def create_order(
         # Create order items
         # ----------------------------------------------------
 
-        for record in inventory_records:
+        for record in order_records:
 
             menu_item = record["menu_item"]
 
@@ -326,23 +287,6 @@ def create_order(
             )
 
             db.add(order_item)
-
-        # ----------------------------------------------------
-        # Deduct stock
-        # ----------------------------------------------------
-
-        for record in inventory_records:
-
-            inventory = record["inventory"]
-            menu_item = record["menu_item"]
-            quantity = record["quantity"]
-
-            inventory.current_stock -= quantity
-
-            # If stock becomes zero,
-            # mark the menu item unavailable.
-            if inventory.current_stock == 0:
-                menu_item.available = False
 
         # ----------------------------------------------------
         # Save order
@@ -361,9 +305,7 @@ def create_order(
             .first()
         )
 
-        return order_response(
-            saved_order,
-        )
+        return order_response(saved_order)
 
     except HTTPException:
         db.rollback()

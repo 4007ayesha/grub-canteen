@@ -11,8 +11,8 @@ from backend.routes.orders import router as orders_router
 from backend.routes.feedback import router as feedback_router
 from backend.routes.notifications import router as notifications_router
 
-# Phase 12 - Inventory & Waste
-from backend.routes.inventory import router as inventory_router
+# Phase 12 -  Waste management
+from backend.routes.inventory import router as waste_router 
 
 # Phase 13 - Analytics
 from backend.routes.analytics import router as analytics_router
@@ -62,8 +62,8 @@ app.include_router(feedback_router)
 # Phase 11 - Notification routes
 app.include_router(notifications_router)
 
-# Phase 12 - Inventory & Waste routes
-app.include_router(inventory_router)
+# Phase 12 -  Waste management routes
+app.include_router(waste_router)
 
 # Phase 13 - Analytics routes
 app.include_router(analytics_router)
