@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useAuth } from "../context/AuthContext";
 import {
   getMenuItems,
@@ -226,109 +227,118 @@ function AdminMenu() {
         </div>
       )}
 
-      <Modal isOpen={showForm} onClose={() => setShowForm(false)}>
-        <h2>{editingId ? "Edit Item" : "Add Item"}</h2>
-        <form onSubmit={handleSubmit} className="mnu-form">
-          <Input
-            label="Name"
-            name="name"
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-            required
-          />
-          <Input
-            label="Description"
-            name="description"
-            value={form.description}
-            onChange={(e) =>
-              setForm({ ...form, description: e.target.value })
-            }
-          />
-          <Input
-            label="Price"
-            name="price"
-            type="number"
-            step="0.01"
-            min="0.01"
-            value={form.price}
-            onChange={(e) => setForm({ ...form, price: e.target.value })}
-            required
-          />
-
-          <label className="mnu-form-label">
-            Category
-            <select
-              value={form.category_id}
-              onChange={(e) =>
-                setForm({ ...form, category_id: e.target.value })
-              }
+      {createPortal(
+        <Modal isOpen={showForm} onClose={() => setShowForm(false)}>
+          <h2>{editingId ? "Edit Item" : "Add Item"}</h2>
+          <form onSubmit={handleSubmit} className="mnu-form">
+            <Input
+              label="Name"
+              name="name"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
               required
-            >
-              <option value="">Select category</option>
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="mnu-form-checkbox">
-            <input
-              type="checkbox"
-              checked={form.available}
+            />
+            <Input
+              label="Description"
+              name="description"
+              value={form.description}
               onChange={(e) =>
-                setForm({ ...form, available: e.target.checked })
+                setForm({ ...form, description: e.target.value })
               }
             />
-            Available
-          </label>
+            <Input
+              label="Price"
+              name="price"
+              type="number"
+              step="0.01"
+              min="0.01"
+              value={form.price}
+              onChange={(e) => setForm({ ...form, price: e.target.value })}
+              required
+            />
 
-          <Input
-            label="Current Stock"
-            name="current_stock"
-            type="number"
-            min="0"
-            value={form.current_stock}
-            onChange={(e) =>
-              setForm({ ...form, current_stock: e.target.value })
-            }
-            required
-          />
+            <label className="mnu-form-label">
+              Category
+              <select
+                value={form.category_id}
+                onChange={(e) =>
+                  setForm({ ...form, category_id: e.target.value })
+                }
+                required
+              >
+                <option value="">Select category</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+            </label>
 
-          <Input
-            label="Image URL"
-            name="image_url"
-            value={form.image_url}
-            onChange={(e) => setForm({ ...form, image_url: e.target.value })}
-          />
+            <label className="mnu-form-checkbox">
+              <input
+                type="checkbox"
+                checked={form.available}
+                onChange={(e) =>
+                  setForm({ ...form, available: e.target.checked })
+                }
+              />
+              Available
+            </label>
 
-          {formError && <div className="adm-error">{formError}</div>}
+            <Input
+              label="Current Stock"
+              name="current_stock"
+              type="number"
+              min="0"
+              value={form.current_stock}
+              onChange={(e) =>
+                setForm({ ...form, current_stock: e.target.value })
+              }
+              required
+            />
 
-          <div className="mnu-form-actions">
-            <Button type="submit">
-              {editingId ? "Save Changes" : "Add Item"}
-            </Button>
-            <Button variant="secondary" onClick={() => setShowForm(false)}>
-              Cancel
-            </Button>
-          </div>
-        </form>
-      </Modal>
+            <Input
+              label="Image URL"
+              name="image_url"
+              value={form.image_url}
+              onChange={(e) => setForm({ ...form, image_url: e.target.value })}
+            />
 
-      <Modal isOpen={!!deleteTarget} onClose={() => setDeleteTarget(null)}>
-        {deleteTarget && (
-          <>
-            <p>Are you sure you want to delete "{deleteTarget.name}"?</p>
+            {formError && <div className="adm-error">{formError}</div>}
+
             <div className="mnu-form-actions">
-              <Button variant="secondary" onClick={() => setDeleteTarget(null)}>
+              <Button type="submit">
+                {editingId ? "Save Changes" : "Add Item"}
+              </Button>
+              <Button variant="secondary" onClick={() => setShowForm(false)}>
                 Cancel
               </Button>
-              <Button onClick={confirmDelete}>Delete</Button>
             </div>
-          </>
-        )}
-      </Modal>
+          </form>
+        </Modal>,
+        document.body
+      )}
+
+      {createPortal(
+        <Modal isOpen={!!deleteTarget} onClose={() => setDeleteTarget(null)}>
+          {deleteTarget && (
+            <>
+              <p>Are you sure you want to delete "{deleteTarget.name}"?</p>
+              <div className="mnu-form-actions">
+                <Button
+                  variant="secondary"
+                  onClick={() => setDeleteTarget(null)}
+                >
+                  Cancel
+                </Button>
+                <Button onClick={confirmDelete}>Delete</Button>
+              </div>
+            </>
+          )}
+        </Modal>,
+        document.body
+      )}
     </AdminPage>
   );
 }
