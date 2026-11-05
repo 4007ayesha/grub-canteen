@@ -348,44 +348,6 @@ class Notification(Base):
     )
 
 
-# ============================================================
-# PHASE 12 - INVENTORY
-# ============================================================
-
-class Inventory(Base):
-    __tablename__ = "inventory"
-
-    id = Column(
-        Integer,
-        primary_key=True,
-        index=True,
-    )
-
-    menu_item_id = Column(
-        Integer,
-        ForeignKey("menu_items.id"),
-        unique=True,
-        nullable=False,
-    )
-
-    current_stock = Column(
-        Integer,
-        default=0,
-        nullable=False,
-    )
-
-    min_threshold = Column(
-        Integer,
-        default=10,
-        nullable=False,
-    )
-
-    updated_at = Column(
-        DateTime(timezone=True),
-        onupdate=func.now(),
-        server_default=func.now(),
-    )
-
 
 # ============================================================
 # PHASE 12 - WASTE RECORDS

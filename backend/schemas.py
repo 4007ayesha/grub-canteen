@@ -37,12 +37,10 @@ class MenuItemCreate(BaseModel):
     category_id: int
     available: bool = True
     image_url: Optional[str] = None
-    current_stock: int = Field(ge=0, default=0)
 
 
 class MenuItemOut(MenuItemCreate):
     id: int
-    current_stock: Optional[int] = None
 
     class Config:
         from_attributes = True
@@ -133,23 +131,7 @@ class NotificationOut(BaseModel):
         from_attributes = True
 
 
-# -------------------------
-# Phase 12 - Inventory Schemas
-# -------------------------
 
-class InventoryUpdate(BaseModel):
-    current_stock: int = Field(ge=0)
-    min_threshold: int = Field(default=10, ge=0)
-
-
-class InventoryOut(BaseModel):
-    id: int
-    menu_item_id: int
-    current_stock: int
-    min_threshold: int
-
-    class Config:
-        from_attributes = True
 
 
 # -------------------------
