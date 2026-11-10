@@ -12,7 +12,7 @@
 }
 
 /* =========================
-   Decorations
+   Decorations (lamp + motto only)
    ========================= */
 
 .menu-decor {
@@ -30,7 +30,6 @@
   max-width: none;
 }
 
-/* lamp + leaf sprig: top half of the art, hanging from the header */
 .menu-decor-lamp {
   top: calc(-1 * var(--space-lg));
   right: 0;
@@ -53,20 +52,6 @@
   left: 0;
 }
 
-/* plant: bottom-right of the art, peeking out in the right margin */
-.menu-decor-plant {
-  top: 150px;
-  right: calc(-1 * var(--shell-gutter));
-  width: var(--shell-gutter);
-  height: 150px;
-}
-
-.menu-decor-plant img {
-  top: -160px;
-  left: -125px;
-}
-
-/* handwritten motto over the bottom-left blob */
 .menu-motto {
   position: fixed;
   left: 64px;
@@ -239,7 +224,12 @@
   height: 100%;
   padding: var(--space-sm);
   border-radius: 18px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.menu-grid-card.in-cart {
+  border-color: var(--color-primary);
 }
 
 .menu-grid-card .menu-tile-image {
@@ -301,6 +291,60 @@
 .menu-add-btn:hover {
   background: var(--color-primary-dark);
   transform: scale(1.1);
+}
+
+/* + / - stepper shown once an item is in the cart */
+.menu-stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px;
+  border-radius: 999px;
+  background: var(--color-primary-light);
+  animation: menu-stepper-pop 0.22s ease;
+}
+
+.menu-step-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.menu-step-btn:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+}
+
+.menu-step-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.menu-step-qty {
+  min-width: 22px;
+  text-align: center;
+  color: var(--color-text);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+@keyframes menu-stepper-pop {
+  0% {
+    transform: scale(0.7);
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .menu-item-link:hover .menu-popular-card,
@@ -414,9 +458,29 @@
 }
 
 @media (max-width: 900px) {
-  .menu-decor-plant,
   .menu-motto {
     display: none;
+  }
+}
+
+/* categories scroll sideways instead of stacking */
+@media (max-width: 768px) {
+  .menu-categories {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    margin: 0 calc(-1 * var(--shell-gutter));
+    padding: 4px var(--shell-gutter) 8px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .menu-categories::-webkit-scrollbar {
+    display: none;
+  }
+
+  .menu-chip {
+    flex-shrink: 0;
+    white-space: nowrap;
   }
 }
 

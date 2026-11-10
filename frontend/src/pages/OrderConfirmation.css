@@ -9,6 +9,7 @@
   width: 100%;
   max-width: 700px;
   margin: 0 auto;
+  box-sizing: border-box;
   padding: 32px 40px 40px;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -125,6 +126,39 @@
   font-weight: 600;
 }
 
+/* receipt items */
+.oc-items {
+  margin-bottom: var(--space-lg);
+  padding: var(--space-md) var(--space-lg);
+  border: 1px solid var(--color-primary-light);
+  border-radius: 20px;
+  text-align: left;
+}
+
+.oc-items h3 {
+  margin: 0 0 var(--space-sm);
+  color: var(--color-text);
+  font-size: var(--font-size-lg);
+}
+
+.oc-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: 8px 0;
+  border-top: 1px solid rgba(240, 182, 196, 0.45);
+  color: var(--color-text);
+}
+
+.oc-item-row:first-of-type {
+  border-top: none;
+}
+
+.oc-item-row small {
+  color: var(--color-text-muted);
+}
+
 /* buttons */
 .oc-actions {
   display: flex;
@@ -199,6 +233,10 @@
   .oc-meta {
     width: 100%;
     text-align: center;
+  }
+
+  .oc-items {
+    padding: var(--space-md);
   }
 
   .oc-btn {

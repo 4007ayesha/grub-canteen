@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getMenuItems } from "../api";
+import usePopularItems from "../hooks/usePopularItems";
 import Card from "../components/ui/Card";
 import heroLeft from "../assets/home-hero-left.png";
 import heroRight from "../assets/home-hero-right.png";
@@ -91,7 +92,8 @@ function Home() {
       });
   }, []);
 
-  const popularPicks = allItems.slice(0, 4);
+  // top sellers, taken from the same ranking as the admin "Popular Items" chart
+  const popularPicks = usePopularItems(allItems, 4);
 
   const newInStock = [...allItems]
     .sort((a, b) => b.id - a.id)
@@ -107,7 +109,9 @@ function Home() {
     allItems.find((item) => item.name.toLowerCase().includes(name))
   )
     .filter(Boolean)
-    .filter((item, index, list) => list.findIndex((i) => i.id === item.id) === index);
+    .filter(
+      (item, index, list) => list.findIndex((i) => i.id === item.id) === index
+    );
 
   return (
     <div className="home-page">

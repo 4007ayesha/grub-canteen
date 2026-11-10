@@ -68,10 +68,10 @@
   display: inline-block;
   padding: 5px 16px;
   border-radius: 999px;
-  font-size: var(--font-size-sm);
-  font-weight: 600;
   background: #f1e6ee;
   color: #7a5a6c;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
 }
 
 .orders-status-received {
@@ -98,19 +98,19 @@
 .orders-actions {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
   flex-wrap: wrap;
+  gap: var(--space-sm);
 }
 
-.orders-track-btn {
+.orders-track-btn,
+.orders-receipt-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   padding: 7px 16px;
   border: none;
   border-radius: 999px;
-  background: var(--color-primary);
-  color: white;
   font-family: var(--font-family);
   font-size: 13px;
   font-weight: 600;
@@ -118,8 +118,23 @@
   transition: background-color 0.2s ease, transform 0.15s ease;
 }
 
+.orders-track-btn {
+  background: var(--color-primary);
+  color: white;
+}
+
 .orders-track-btn:hover {
   background: var(--color-primary-dark);
+  transform: translateY(-1px);
+}
+
+.orders-receipt-btn {
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
+.orders-receipt-btn:hover {
+  background: #f3b3c5;
   transform: translateY(-1px);
 }
 
@@ -153,9 +168,64 @@
   color: var(--color-error);
 }
 
-@media (max-width: 600px) {
-  .orders-table th,
+/* =========================
+   Narrow screens: each order becomes a card (no sideways scrolling)
+   ========================= */
+
+@media (max-width: 1000px) {
+  .orders-table {
+    min-width: 0;
+  }
+
+  .orders-table thead {
+    display: none;
+  }
+
+  .orders-table,
+  .orders-table tbody,
+  .orders-table tr,
   .orders-table td {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .orders-table tr {
     padding: 12px 16px;
+    border-top: 1px solid rgba(240, 182, 196, 0.45);
+  }
+
+  .orders-table tbody tr:first-child {
+    border-top: none;
+  }
+
+  .orders-table td,
+  .orders-table tbody tr:first-child td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 6px 0;
+    border: none;
+  }
+
+  .orders-table td::before {
+    content: attr(data-label);
+    color: var(--color-text-muted);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .orders-table td.orders-actions-cell {
+    display: block;
+    padding-top: 10px;
+  }
+
+  .orders-table td.orders-actions-cell::before {
+    display: none;
+  }
+
+  .orders-actions > button {
+    flex: 1 1 auto;
   }
 }

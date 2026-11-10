@@ -233,4 +233,17 @@ export async function updatePredictionActual(predictionId, actualQty, token) {
   }
 
   return data;
+}export async function getPopularItems(token) {
+  const response = await fetch(`${API_URL}/analytics/popular-items`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.detail || "Failed to load popular items");
+  }
+
+  return data;
 }

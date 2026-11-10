@@ -80,7 +80,7 @@
 }
 
 /* =========================
-   Popular Picks
+   Popular Picks / New / Season
    ========================= */
 
 .home-section-header {
@@ -158,7 +158,6 @@
   object-fit: cover;
 }
 
-/* little pink sparkle dashes in the top corners of the image */
 .home-popular-image-wrap::before,
 .home-popular-image-wrap::after {
   content: "";
@@ -221,13 +220,24 @@
   }
 }
 
+/* mobile: text on top, the chef sits at the bottom of the banner */
 @media (max-width: 700px) {
   .home-hero {
     grid-template-columns: 1fr;
+    justify-items: center;
+    min-height: 0;
+  }
+
+  .home-hero-center {
+    order: 1;
+    padding: var(--space-lg) var(--space-md) 0;
   }
 
   .home-hero-art-left {
-    display: none;
+    order: 2;
+    display: block;
+    height: 230px;
+    margin-top: var(--space-sm);
   }
 
   .home-hero-heading h1 {

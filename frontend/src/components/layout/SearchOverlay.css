@@ -55,3 +55,20 @@
   grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
   gap: var(--space-lg);
 }
+@media (max-width: 768px) {
+  .search-overlay-categories {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scrollbar-width: none;
+  }
+
+  .search-overlay-categories::-webkit-scrollbar {
+    display: none;
+  }
+
+  .search-overlay-categories .menu-chip {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+}
