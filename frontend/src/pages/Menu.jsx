@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { getMenuItems, getCategories } from "../api";
 import { useCart } from "../context/CartContext";
+import usePopularItems from "../hooks/usePopularItems";
+import { playAddSound, playRemoveSound } from "../utils/sound";
 import Card from "../components/ui/Card";
 import Badge from "../components/ui/Badge";
 import heroRight from "../assets/home-hero-right.png";
@@ -26,11 +28,11 @@ function Squiggle() {
   );
 }
 
-function PlusIcon() {
+function PlusIcon({ size = 16 }) {
   return (
     <svg
-      width="16"
-      height="16"
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -43,12 +45,37 @@ function PlusIcon() {
   );
 }
 
+function MinusIcon({ size = 16 }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+    >
+      <line x1="5" y1="12" x2="19" y2="12" />
+    </svg>
+  );
+}
+
 function isOutOfStock(item) {
   return !item.available || item.current_stock === 0;
 }
 
+function hasStockLimit(item) {
+  return item.current_stock !== undefined && item.current_stock !== null;
+}
+
+function stop(e) {
+  e.preventDefault();
+  e.stopPropagation();
+}
+
 function Menu() {
-  const { addToCart } = useCart();
+  const { cart, addToCart, updateQuantity } = useCart();
   const [items, setItems] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -76,13 +103,41 @@ function Menu() {
       });
   }, []);
 
-  function handleAddToCart(e, item) {
-    e.preventDefault();
-    e.stopPropagation();
-    addToCart(item);
+  // top sellers, taken from the same ranking as the admin "Popular Items" chart
+  const popularPicks = usePopularItems(items, 4);
+
+  function quantityOf(itemId) {
+    const entry = cart.find((c) => c.id === itemId);
+    return entry ? entry.quantity : 0;
   }
 
-  const popularPicks = items.slice(0, 4);
+  function handleAdd(e, item) {
+    stop(e);
+    addToCart(item);
+    playAddSound();
+  }
+
+  function handleChange(e, item, newQuantity) {
+    stop(e);
+
+    const current = quantityOf(item.id);
+
+    if (
+      newQuantity > current &&
+      hasStockLimit(item) &&
+      newQuantity > item.current_stock
+    ) {
+      return;
+    }
+
+    updateQuantity(item.id, newQuantity);
+
+    if (newQuantity > current) {
+      playAddSound();
+    } else {
+      playRemoveSound();
+    }
+  }
 
   const visibleItems =
     selectedCategory === null
@@ -93,11 +148,8 @@ function Menu() {
 
   return (
     <div className="menu-page">
-      {/* decorations (all reuse existing assets) */}
+      {/* decorations (reuse existing assets) */}
       <div className="menu-decor menu-decor-lamp" aria-hidden="true">
-        <img src={heroRight} alt="" />
-      </div>
-      <div className="menu-decor menu-decor-plant" aria-hidden="true">
         <img src={heroRight} alt="" />
       </div>
       <div className="menu-motto" aria-hidden="true">
@@ -180,45 +232,84 @@ function Menu() {
 
         {dataReady && visibleItems.length > 0 && (
           <div className="menu-grid">
-            {visibleItems.map((item) => (
-              <Link
-                key={item.id}
-                to={`/food/${item.id}`}
-                className="menu-item-link"
-              >
-                <Card className="menu-grid-card">
-                  <div className="menu-tile-image">
-                    {item.image_url && (
-                      <img src={item.image_url} alt={item.name} />
-                    )}
-                  </div>
+            {visibleItems.map((item) => {
+              const quantity = quantityOf(item.id);
+              const atMax =
+                hasStockLimit(item) && quantity >= item.current_stock;
 
-                  <div className="menu-grid-body">
-                    <h3 className="menu-grid-name">{item.name}</h3>
-                    {item.description && (
-                      <p className="menu-grid-desc">{item.description}</p>
-                    )}
-                  </div>
+              return (
+                <Link
+                  key={item.id}
+                  to={`/food/${item.id}`}
+                  className="menu-item-link"
+                >
+                  <Card
+                    className={`menu-grid-card ${
+                      quantity > 0 ? "in-cart" : ""
+                    }`}
+                  >
+                    <div className="menu-tile-image">
+                      {item.image_url && (
+                        <img src={item.image_url} alt={item.name} />
+                      )}
+                    </div>
 
-                  <div className="menu-grid-footer">
-                    <strong className="menu-grid-price">₹{item.price}</strong>
+                    <div className="menu-grid-body">
+                      <h3 className="menu-grid-name">{item.name}</h3>
+                      {item.description && (
+                        <p className="menu-grid-desc">{item.description}</p>
+                      )}
+                    </div>
 
-                    {isOutOfStock(item) ? (
-                      <Badge variant="warning">Out of stock</Badge>
-                    ) : (
-                      <button
-                        type="button"
-                        className="menu-add-btn"
-                        onClick={(e) => handleAddToCart(e, item)}
-                        aria-label={`Add ${item.name} to cart`}
-                      >
-                        <PlusIcon />
-                      </button>
-                    )}
-                  </div>
-                </Card>
-              </Link>
-            ))}
+                    <div className="menu-grid-footer">
+                      <strong className="menu-grid-price">
+                        ₹{item.price}
+                      </strong>
+
+                      {isOutOfStock(item) ? (
+                        <Badge variant="warning">Out of stock</Badge>
+                      ) : quantity === 0 ? (
+                        <button
+                          type="button"
+                          className="menu-add-btn"
+                          onClick={(e) => handleAdd(e, item)}
+                          aria-label={`Add ${item.name} to cart`}
+                        >
+                          <PlusIcon />
+                        </button>
+                      ) : (
+                        <div className="menu-stepper" onClick={stop}>
+                          <button
+                            type="button"
+                            className="menu-step-btn"
+                            onClick={(e) =>
+                              handleChange(e, item, quantity - 1)
+                            }
+                            aria-label={`Remove one ${item.name}`}
+                          >
+                            <MinusIcon size={14} />
+                          </button>
+
+                          <span className="menu-step-qty">{quantity}</span>
+
+                          <button
+                            type="button"
+                            className="menu-step-btn"
+                            onClick={(e) =>
+                              handleChange(e, item, quantity + 1)
+                            }
+                            disabled={atMax}
+                            aria-label={`Add one more ${item.name}`}
+                          >
+                            <PlusIcon size={14} />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </Card>
+                </Link>
+              );
+            })}
           </div>
         )}
       </section>

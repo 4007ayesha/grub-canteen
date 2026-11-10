@@ -58,7 +58,32 @@ function PinIcon() {
   );
 }
 
-function OrdersTable({ orders, submittedFeedback, onTrack, onRate }) {
+function ReceiptIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M4 2v20l3-2 3 2 3-2 3 2 3-2 1 .7V2z" />
+      <line x1="8" y1="8" x2="16" y2="8" />
+      <line x1="8" y1="12" x2="16" y2="12" />
+    </svg>
+  );
+}
+
+function OrdersTable({
+  orders,
+  submittedFeedback,
+  onTrack,
+  onReceipt,
+  onRate,
+}) {
   return (
     <div className="orders-card">
       <div className="orders-table-wrap">
@@ -69,24 +94,26 @@ function OrdersTable({ orders, submittedFeedback, onTrack, onRate }) {
               <th>Token No.</th>
               <th>Total Amount</th>
               <th>Status</th>
-              <th>Track Order</th>
+              <th>Actions</th>
             </tr>
           </thead>
 
           <tbody>
             {orders.map((order) => (
               <tr key={order.id}>
-                <td>{formatOrderNo(order.id)}</td>
-                <td>{order.token_number}</td>
-                <td>₹{formatPrice(order.total_amount)}</td>
-                <td>
+                <td data-label="Order No.">{formatOrderNo(order.id)}</td>
+                <td data-label="Token No.">{order.token_number}</td>
+                <td data-label="Total Amount">
+                  ₹{formatPrice(order.total_amount)}
+                </td>
+                <td data-label="Status">
                   <span
                     className={`orders-status orders-status-${order.status}`}
                   >
                     {statusLabel(order.status)}
                   </span>
                 </td>
-                <td>
+                <td className="orders-actions-cell" data-label="Actions">
                   <div className="orders-actions">
                     <button
                       type="button"
@@ -95,6 +122,15 @@ function OrdersTable({ orders, submittedFeedback, onTrack, onRate }) {
                     >
                       <PinIcon />
                       Track Order
+                    </button>
+
+                    <button
+                      type="button"
+                      className="orders-receipt-btn"
+                      onClick={() => onReceipt(order)}
+                    >
+                      <ReceiptIcon />
+                      View Receipt
                     </button>
 
                     {order.status === "collected" &&
@@ -147,7 +183,7 @@ function Orders() {
         }
 
         const data = await response.json();
-        // Most recent first — using order id as a stand-in for recency
+        // Most recent first (order id stands in for recency)
         const sorted = [...data].sort((a, b) => b.id - a.id);
         setOrders(sorted);
       } catch (err) {
@@ -168,6 +204,16 @@ function Orders() {
       [orderId]: true,
     }));
     setFeedbackOrderId(null);
+  };
+
+  const openTracking = (orderId) => {
+    navigate(`/order-tracking/${orderId}`);
+  };
+
+  const openReceipt = (order) => {
+    navigate("/order-confirmation", {
+      state: { order, fromOrders: true },
+    });
   };
 
   if (!token) {
@@ -202,7 +248,8 @@ function Orders() {
           <OrdersTable
             orders={recentOrders}
             submittedFeedback={submittedFeedback}
-            onTrack={(id) => navigate(`/order-tracking/${id}`)}
+            onTrack={openTracking}
+            onReceipt={openReceipt}
             onRate={setFeedbackOrderId}
           />
         </section>
@@ -218,7 +265,8 @@ function Orders() {
           <OrdersTable
             orders={previousOrders}
             submittedFeedback={submittedFeedback}
-            onTrack={(id) => navigate(`/order-tracking/${id}`)}
+            onTrack={openTracking}
+            onReceipt={openReceipt}
             onRate={setFeedbackOrderId}
           />
         </section>

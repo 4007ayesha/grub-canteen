@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link, Navigate, useLocation } from "react-router-dom";
+import { getMenuItems } from "../api";
 import PageDecor from "../components/layout/PageDecor";
 import { LeafIcon } from "../components/layout/Decor";
 import "./OrderConfirmation.css";
@@ -89,6 +90,16 @@ function HomeIcon() {
   );
 }
 
+function OrdersIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" {...iconProps}>
+      <path d="M4 2v20l3-2 3 2 3-2 3 2 3-2 1 .7V2z" />
+      <line x1="8" y1="8" x2="16" y2="8" />
+      <line x1="8" y1="12" x2="16" y2="12" />
+    </svg>
+  );
+}
+
 function ArrowIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" {...iconProps}>
@@ -98,15 +109,85 @@ function ArrowIcon() {
   );
 }
 
+function capitalize(text) {
+  if (!text) return "";
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+function formatOrderNo(id) {
+  return `#ORD${String(id).padStart(5, "0")}`;
+}
+
+function methodLabel(method) {
+  if (!method) return "N/A";
+  if (method === "upi") return "UPI";
+  return capitalize(method);
+}
+
+// returns { text, tone } or null when nothing is known
+function paymentStatusInfo(order) {
+  const method = order.payment_method;
+  const status = order.payment_status;
+
+  if (status) {
+    if (status === "paid") return { text: "Paid", tone: "paid" };
+    if (status === "pending") {
+      return {
+        text: method === "cash" ? "Pending — pay at the counter" : "Pending",
+        tone: "pending",
+      };
+    }
+    return { text: capitalize(status), tone: "pending" };
+  }
+
+  if (method === "cash") {
+    return { text: "Pending — pay at the counter", tone: "pending" };
+  }
+
+  if (method) {
+    return { text: "Paid", tone: "paid" };
+  }
+
+  return null;
+}
+
+function progressNote(order, fromOrders) {
+  if (!fromOrders) return "We're preparing your delicious meal!";
+
+  if (order.status === "received" || order.status === "preparing") {
+    return "Your order is being prepared.";
+  }
+  if (order.status === "ready") return "Your order is ready for pickup!";
+  if (order.status === "collected") return "Enjoy your meal!";
+  return "";
+}
+
 const OrderConfirmation = () => {
   const location = useLocation();
   const order = location.state?.order;
+  const fromOrders = Boolean(location.state?.fromOrders);
+
+  const [itemNames, setItemNames] = useState({});
+
+  useEffect(() => {
+    getMenuItems()
+      .then((list) => {
+        const map = {};
+        list.forEach((menuItem) => {
+          map[menuItem.id] = menuItem.name;
+        });
+        setItemNames(map);
+      })
+      .catch(() => setItemNames({}));
+  }, []);
 
   if (!order) {
     return <Navigate to="/menu" replace />;
   }
 
-  const isCash = order.payment_method === "cash";
+  const paymentInfo = paymentStatusInfo(order);
+  const note = progressNote(order, fromOrders);
+  const orderItems = order.items || [];
 
   return (
     <div className="oc-page">
@@ -123,9 +204,13 @@ const OrderConfirmation = () => {
           </span>
         </div>
 
-        <h1>Order Confirmed!</h1>
-        <p className="oc-lead">Your order has been placed successfully.</p>
-        <p className="oc-sub">We're preparing your delicious meal!</p>
+        <h1>{fromOrders ? "Order Receipt" : "Order Confirmed!"}</h1>
+        <p className="oc-lead">
+          {fromOrders
+            ? "Here are the details of your order."
+            : "Your order has been placed successfully."}
+        </p>
+        {note && <p className="oc-sub">{note}</p>}
 
         <div className="oc-summary">
           <div className="oc-token">
@@ -136,15 +221,52 @@ const OrderConfirmation = () => {
           <div className="oc-divider" />
 
           <div className="oc-meta">
+            <p>Order: {formatOrderNo(order.id)}</p>
             <p className="oc-total">
               Total: <strong>₹{order.total_amount}</strong>
             </p>
-            <p>Payment: {isCash ? "Cash" : "UPI"}</p>
-            <p className={isCash ? "oc-status-pending" : "oc-status-paid"}>
-              Status: {isCash ? "Pending — pay at the counter" : "Paid"}
-            </p>
+            <p>Payment: {methodLabel(order.payment_method)}</p>
+            {paymentInfo && (
+              <p
+                className={
+                  paymentInfo.tone === "paid"
+                    ? "oc-status-paid"
+                    : "oc-status-pending"
+                }
+              >
+                Status: {paymentInfo.text}
+              </p>
+            )}
+            {fromOrders && order.status && (
+              <p>Order status: {capitalize(order.status)}</p>
+            )}
           </div>
         </div>
+
+        {orderItems.length > 0 && (
+          <div className="oc-items">
+            <h3>Items</h3>
+
+            {orderItems.map((orderItem, index) => (
+              <div
+                key={orderItem.id ?? `${orderItem.menu_item_id}-${index}`}
+                className="oc-item-row"
+              >
+                <span>
+                  {itemNames[orderItem.menu_item_id] ||
+                    `Item #${orderItem.menu_item_id}`}{" "}
+                  <small>× {orderItem.quantity}</small>
+                </span>
+                <span>
+                  ₹
+                  {(
+                    Number(orderItem.price_at_order) * orderItem.quantity
+                  ).toFixed(2)}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
 
         <div className="oc-actions">
           <Link
@@ -156,10 +278,17 @@ const OrderConfirmation = () => {
             <ArrowIcon />
           </Link>
 
-          <Link to="/home" className="oc-btn oc-btn-soft">
-            <HomeIcon />
-            Back to Home
-          </Link>
+          {fromOrders ? (
+            <Link to="/orders" className="oc-btn oc-btn-soft">
+              <OrdersIcon />
+              Back to Orders
+            </Link>
+          ) : (
+            <Link to="/home" className="oc-btn oc-btn-soft">
+              <HomeIcon />
+              Back to Home
+            </Link>
+          )}
         </div>
       </div>
     </div>

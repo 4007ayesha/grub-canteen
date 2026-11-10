@@ -1,0 +1,154 @@
+.trk-page {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-lg);
+  padding-bottom: var(--space-2xl);
+}
+
+/* pink back button */
+.trk-back {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  border-radius: 999px;
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.trk-back:hover {
+  background: #f3b3c5;
+  transform: translateX(-2px);
+}
+
+.trk-status-text {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.trk-error {
+  margin: 0;
+  color: var(--color-error);
+}
+
+.trk-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 560px;
+  box-sizing: border-box;
+  padding: 24px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 24px;
+}
+
+.trk-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.trk-head h2 {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--font-size-xl);
+}
+
+.trk-token {
+  padding: 5px 16px;
+  border-radius: 999px;
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.trk-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.trk-step {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: 12px 14px;
+  border-radius: 18px;
+}
+
+.trk-step.current {
+  background: rgba(247, 197, 210, 0.35);
+}
+
+.trk-dot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border: 2px solid var(--color-border);
+  border-radius: 50%;
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-weight: 700;
+}
+
+.trk-step.done .trk-dot {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: white;
+}
+
+.trk-step.current .trk-dot {
+  box-shadow: 0 0 0 5px rgba(233, 111, 145, 0.2);
+}
+
+.trk-step-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.trk-step-text strong {
+  color: var(--color-text);
+}
+
+.trk-step-text small {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.trk-step:not(.done) .trk-step-text strong {
+  color: var(--color-text-muted);
+}
+
+.trk-current {
+  margin: var(--space-lg) 0 0;
+  color: var(--color-text-muted);
+}
+
+.trk-current strong {
+  color: var(--color-primary);
+}
+
+@media (max-width: 600px) {
+  .trk-card {
+    padding: 16px;
+  }
+}

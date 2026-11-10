@@ -282,40 +282,68 @@
   cursor: not-allowed;
 }
 
-/* mobile */
+/* =========================
+   Mobile (roomier, total sits in its own card)
+   ========================= */
+
 @media (max-width: 640px) {
+  .cart-overlay {
+    padding: 12px;
+  }
+
   .cart-modal {
-    padding: var(--space-md);
+    max-height: 90vh;
+    padding: 16px;
     border-radius: 22px;
   }
 
+  .cart-header {
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
   .cart-logo {
-    height: 44px;
+    height: 42px;
   }
 
   .cart-title {
-    font-size: 24px;
+    font-size: 22px;
   }
 
   .cart-title .cart-squiggle {
     display: none;
   }
 
+  .cart-close {
+    width: 34px;
+    height: 34px;
+  }
+
   .cart-row {
-    grid-template-columns: 72px 1fr 28px;
+    grid-template-columns: 68px 1fr 28px;
     grid-template-areas:
       "image info remove"
       "image qty line";
-    gap: var(--space-sm) var(--space-md);
+    gap: 8px 12px;
+    padding: 10px 12px;
   }
 
   .cart-row-image {
     grid-area: image;
-    height: 72px;
+    height: 68px;
   }
 
   .cart-row-info {
     grid-area: info;
+  }
+
+  .cart-row-name {
+    font-size: 16px;
+  }
+
+  .cart-row-price {
+    margin-top: 2px;
+    font-size: 15px;
   }
 
   .cart-row-qty {
@@ -324,10 +352,33 @@
 
   .cart-row-line {
     grid-area: line;
+    align-self: center;
+    font-size: 16px;
   }
 
   .cart-row-remove {
     grid-area: remove;
+    align-self: start;
+  }
+
+  .cart-footer {
+    margin-top: 12px;
+    padding-top: 12px;
+  }
+
+  .cart-total-row {
+    margin-bottom: 12px;
+    padding: 12px 16px;
+    border-radius: 16px;
+    background: rgba(247, 197, 210, 0.28);
+  }
+
+  .cart-total-label {
+    font-size: 15px;
+  }
+
+  .cart-total-value {
+    font-size: 24px;
   }
 
   .cart-checkout-wrap {
@@ -338,7 +389,8 @@
     display: none;
   }
 
-  .cart-total-value {
-    font-size: 24px;
+  .cart-checkout-btn {
+    padding: 14px 18px;
+    font-size: 16px;
   }
 }

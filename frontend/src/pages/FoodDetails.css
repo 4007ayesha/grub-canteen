@@ -1,32 +1,228 @@
-.food-details-page {
+.fd-page {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  align-items: flex-start;
+  gap: var(--space-lg);
+  padding-bottom: var(--space-2xl);
 }
 
-.food-details-card {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-  max-width: 480px;
+/* pink back button */
+.fd-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  border-radius: 999px;
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.2s ease, transform 0.15s ease;
 }
 
-.food-details-image {
+.fd-back:hover {
+  background: #f3b3c5;
+  transform: translateX(-2px);
+}
+
+.fd-status {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.fd-error {
+  margin: 0;
+  color: var(--color-error);
+}
+
+.fd-card {
+  display: grid;
+  grid-template-columns: minmax(0, 340px) 1fr;
+  gap: var(--space-xl);
   width: 100%;
-  height: 240px;
+  max-width: 860px;
+  box-sizing: border-box;
+  padding: 24px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 24px;
+}
+
+.fd-image {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 260px;
+  overflow: hidden;
+  border-radius: 20px;
+  background: var(--color-primary-light);
+}
+
+.fd-image img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  border-radius: var(--radius-md);
 }
 
-.food-details-price {
-  font-size: var(--font-size-xl);
+.fd-image::before,
+.fd-image::after {
+  content: "";
+  position: absolute;
+  top: 16px;
+  width: 16px;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--color-primary);
 }
 
-.food-details-added {
-  color: var(--color-success);
+.fd-image::before {
+  left: 16px;
+  transform: rotate(-35deg);
+}
+
+.fd-image::after {
+  right: 16px;
+  transform: rotate(35deg);
+}
+
+.fd-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-sm);
+}
+
+.fd-info h2 {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 32px;
+}
+
+.fd-desc {
+  margin: 0;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.fd-price {
+  margin: 4px 0;
+  color: var(--color-primary);
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.fd-low-stock {
+  margin: 0;
+  color: #a0651a;
+  font-size: var(--font-size-sm);
   font-weight: 600;
 }
 
-.menu-error {
-  color: var(--color-error);
+.fd-unavailable {
+  align-self: flex-start;
+  margin: 0;
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: #fbd9e2;
+  color: #b23a5c;
+  font-weight: 600;
+}
+
+.fd-add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  align-self: flex-start;
+  padding: 14px 32px;
+  border: none;
+  border-radius: 999px;
+  background: var(--color-accent);
+  color: white;
+  font-family: inherit;
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.fd-add:hover {
+  background: var(--color-primary);
+  transform: translateY(-1px);
+}
+
+.fd-in-cart {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+
+.fd-stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px;
+  border-radius: 999px;
+  background: var(--color-primary-light);
+}
+
+.fd-step-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.fd-step-btn:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+}
+
+.fd-step-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.fd-step-qty {
+  min-width: 28px;
+  text-align: center;
+  color: var(--color-text);
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+}
+
+.fd-in-cart-text {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.fd-in-cart-text strong {
+  color: var(--color-primary);
+  font-size: var(--font-size-lg);
+}
+
+@media (max-width: 700px) {
+  .fd-card {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+    padding: 16px;
+  }
+
+  .fd-image {
+    min-height: 200px;
+  }
+
+  .fd-info h2 {
+    font-size: 26px;
+  }
 }
