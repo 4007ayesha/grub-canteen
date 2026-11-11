@@ -239,3 +239,61 @@
     grid-template-columns: 1fr;
   }
 }
+/* Prediction History: each prediction becomes a card on narrow screens (no sideways scroll) */
+@media (max-width: 1000px) {
+  .ana-table-card .adm-table {
+    min-width: 0;
+  }
+
+  .ana-table-card .adm-table thead {
+    display: none;
+  }
+
+  .ana-table-card .adm-table,
+  .ana-table-card .adm-table tbody,
+  .ana-table-card .adm-table tr,
+  .ana-table-card .adm-table td {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .ana-table-card .adm-table tr {
+    padding: 12px 16px;
+    border-top: 1px solid rgba(240, 182, 196, 0.45);
+  }
+
+  .ana-table-card .adm-table tbody tr:first-child {
+    border-top: none;
+  }
+
+  .ana-table-card .adm-table td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 6px 0;
+    border: none;
+  }
+
+  .ana-table-card .adm-table td::before {
+    color: var(--color-text-muted);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .ana-table-card .adm-table td:nth-child(1)::before { content: "Food Item"; }
+  .ana-table-card .adm-table td:nth-child(2)::before { content: "Date"; }
+  .ana-table-card .adm-table td:nth-child(3)::before { content: "Predicted"; }
+  .ana-table-card .adm-table td:nth-child(4)::before { content: "Actual"; }
+  .ana-table-card .adm-table td:nth-child(5)::before { content: "Difference"; }
+
+  .ana-actual {
+    flex: 1;
+    justify-content: flex-end;
+  }
+
+  .ana-actual .adm-input {
+    max-width: 120px;
+  }
+}

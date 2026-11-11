@@ -32,3 +32,53 @@
 .inv-empty-flat {
   margin: 0 22px 22px;
 }
+/* Waste History: each record becomes a card on narrow screens (no sideways scroll) */
+@media (max-width: 1000px) {
+  .inv-history .adm-table {
+    min-width: 0;
+  }
+
+  .inv-history .adm-table thead {
+    display: none;
+  }
+
+  .inv-history .adm-table,
+  .inv-history .adm-table tbody,
+  .inv-history .adm-table tr,
+  .inv-history .adm-table td {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .inv-history .adm-table tr {
+    padding: 12px 20px;
+    border-top: 1px solid rgba(240, 182, 196, 0.45);
+  }
+
+  .inv-history .adm-table tbody tr:first-child {
+    border-top: none;
+  }
+
+  .inv-history .adm-table td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 5px 0;
+    border: none;
+  }
+
+  .inv-history .adm-table td::before {
+    color: var(--color-text-muted);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .inv-history .adm-table td:nth-child(1)::before { content: "ID"; }
+  .inv-history .adm-table td:nth-child(2)::before { content: "Menu Item"; }
+  .inv-history .adm-table td:nth-child(3)::before { content: "Date"; }
+  .inv-history .adm-table td:nth-child(4)::before { content: "Prepared"; }
+  .inv-history .adm-table td:nth-child(5)::before { content: "Sold"; }
+  .inv-history .adm-table td:nth-child(6)::before { content: "Wasted"; }
+}

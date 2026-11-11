@@ -311,3 +311,23 @@
 .dash-recent-card .dash-manage:hover {
   background: #f3b3c5;
 }
+/* mobile: keep the chef visible (text on top, chef at the bottom of the banner) */
+@media (max-width: 700px) {
+  .dash-hero {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    min-height: 0;
+  }
+
+  .dash-hero-center {
+    order: 1;
+    padding: var(--space-lg) var(--space-md) 0;
+  }
+
+  .dash-hero-art-left {
+    order: 2;
+    display: block;
+    height: 230px;
+    margin-top: var(--space-sm);
+  }
+}
