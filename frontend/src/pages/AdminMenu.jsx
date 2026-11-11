@@ -8,11 +8,9 @@ import {
   updateMenuItem,
   deleteMenuItem,
 } from "../api";
-import Button from "../components/ui/Button";
-import Input from "../components/ui/Input";
-import Modal from "../components/ui/Modal";
 import AdminPage, { AdminPageHeader } from "../components/layout/AdminPage";
-import { LeafIcon } from "../components/layout/Decor";
+import { Squiggle, LeafIcon } from "../components/layout/Decor";
+import logo from "../assets/logo.png";
 import "./AdminMenu.css";
 
 const emptyForm = {
@@ -42,13 +40,91 @@ function PencilIcon() {
   );
 }
 
-function TrashIcon() {
+function TrashIcon({ size = 14 }) {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" {...iconProps}>
+    <svg width={size} height={size} viewBox="0 0 24 24" {...iconProps}>
       <polyline points="3 6 5 6 21 6" />
       <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
       <path d="M10 11v6M14 11v6" />
     </svg>
+  );
+}
+
+function SearchIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" {...iconProps}>
+      <circle cx="11" cy="11" r="8" />
+      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" {...iconProps}>
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  );
+}
+
+// numbers only: no minus sign, letters or symbols can get in
+function sanitizeWholeNumber(value) {
+  return value.replace(/[^0-9]/g, "");
+}
+
+function sanitizePrice(value) {
+  const cleaned = value.replace(/[^0-9.]/g, "");
+  const firstDot = cleaned.indexOf(".");
+
+  if (firstDot === -1) return cleaned;
+
+  const whole = cleaned.slice(0, firstDot);
+  const decimals = cleaned
+    .slice(firstDot + 1)
+    .replace(/\./g, "")
+    .slice(0, 2);
+
+  return `${whole}.${decimals}`;
+}
+
+// themed popup (rendered on the page body so it always sits on top)
+function AdminModal({ open, onClose, size, label, children }) {
+  useEffect(() => {
+    if (!open) return undefined;
+
+    function handleEscape(e) {
+      if (e.key === "Escape") onClose();
+    }
+
+    document.addEventListener("keydown", handleEscape);
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+      document.body.style.overflow = "";
+    };
+  }, [open, onClose]);
+
+  if (!open) return null;
+
+  return createPortal(
+    <div
+      className="amodal-overlay"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div
+        className={`amodal ${size === "small" ? "amodal-small" : ""}`}
+        role="dialog"
+        aria-modal="true"
+        aria-label={label}
+      >
+        {children}
+      </div>
+    </div>,
+    document.body
   );
 }
 
@@ -59,6 +135,7 @@ function AdminMenu() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [search, setSearch] = useState("");
 
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -88,6 +165,10 @@ function AdminMenu() {
       .catch(() => setCategories([]));
   }, []);
 
+  function closeForm() {
+    setShowForm(false);
+  }
+
   function openAddForm() {
     setEditingId(null);
     setForm(emptyForm);
@@ -100,11 +181,14 @@ function AdminMenu() {
     setForm({
       name: item.name,
       description: item.description || "",
-      price: item.price,
+      price: item.price === undefined || item.price === null ? "" : String(item.price),
       category_id: item.category_id,
       available: item.available,
       image_url: item.image_url || "",
-      current_stock: item.current_stock ?? "",
+      current_stock:
+        item.current_stock === undefined || item.current_stock === null
+          ? ""
+          : String(item.current_stock),
     });
     setFormError("");
     setShowForm(true);
@@ -163,6 +247,11 @@ function AdminMenu() {
     return <p>You don't have access to this page.</p>;
   }
 
+  const query = search.trim().toLowerCase();
+  const filteredItems = query
+    ? items.filter((item) => item.name.toLowerCase().includes(query))
+    : items;
+
   return (
     <AdminPage>
       <AdminPageHeader
@@ -171,10 +260,37 @@ function AdminMenu() {
       />
 
       <div className="mnu-toolbar">
+        <div className="mnu-search">
+          <SearchIcon />
+          <input
+            type="text"
+            placeholder="Search menu items..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            aria-label="Search menu items"
+          />
+          {search && (
+            <button
+              type="button"
+              className="mnu-search-clear"
+              onClick={() => setSearch("")}
+              aria-label="Clear search"
+            >
+              <CloseIcon />
+            </button>
+          )}
+        </div>
+
         <button type="button" className="adm-btn" onClick={openAddForm}>
           + Add Item
         </button>
       </div>
+
+      {!loading && !error && query && items.length > 0 && (
+        <p className="mnu-count">
+          Showing {filteredItems.length} of {items.length} items
+        </p>
+      )}
 
       {loading && <p className="adm-status-text">Loading menu...</p>}
       {!loading && error && <div className="adm-error">{error}</div>}
@@ -185,9 +301,15 @@ function AdminMenu() {
         </div>
       )}
 
-      {!loading && !error && items.length > 0 && (
+      {!loading && !error && items.length > 0 && filteredItems.length === 0 && (
+        <div className="adm-empty">
+          <p>No menu items match "{search.trim()}".</p>
+        </div>
+      )}
+
+      {!loading && !error && filteredItems.length > 0 && (
         <div className="mnu-list">
-          {items.map((item) => (
+          {filteredItems.map((item) => (
             <div key={item.id} className="adm-card mnu-row">
               <span className="mnu-leaf">
                 <LeafIcon size={22} />
@@ -227,55 +349,138 @@ function AdminMenu() {
         </div>
       )}
 
-      {createPortal(
-        <Modal isOpen={showForm} onClose={() => setShowForm(false)}>
-          <h2>{editingId ? "Edit Item" : "Add Item"}</h2>
-          <form onSubmit={handleSubmit} className="mnu-form">
-            <Input
-              label="Name"
-              name="name"
+      {/* Add / Edit popup */}
+      <AdminModal
+        open={showForm}
+        onClose={closeForm}
+        label={editingId ? "Edit item" : "Add item"}
+      >
+        <div className="amodal-header">
+          <img src={logo} alt="Grub Canteen" className="amodal-logo" />
+
+          <h2 className="amodal-title">
+            <Squiggle size={24} />
+            {editingId ? "Edit Item" : "Add Item"}
+            <Squiggle size={24} flip />
+            <LeafIcon size={26} />
+          </h2>
+
+          <button
+            type="button"
+            className="amodal-close"
+            onClick={closeForm}
+            aria-label="Close"
+          >
+            <CloseIcon />
+          </button>
+        </div>
+
+        <div className="amodal-preview">
+          <div className="amodal-preview-tile">
+            {form.image_url.trim() && (
+              <img
+                key={form.image_url}
+                src={form.image_url}
+                alt=""
+                onError={(e) => {
+                  e.currentTarget.style.display = "none";
+                }}
+              />
+            )}
+          </div>
+
+          <div className="amodal-preview-info">
+            <strong>{form.name.trim() || "New menu item"}</strong>
+            <span>₹{form.price || "0"}</span>
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="amodal-form">
+          <div className="amodal-field amodal-wide">
+            <label htmlFor="mnu-name">Name</label>
+            <input
+              id="mnu-name"
+              className="amodal-input"
+              type="text"
+              placeholder="e.g. Masala Dosa"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               required
             />
-            <Input
-              label="Description"
-              name="description"
+          </div>
+
+          <div className="amodal-field amodal-wide">
+            <label htmlFor="mnu-desc">Description</label>
+            <textarea
+              id="mnu-desc"
+              className="amodal-textarea"
+              placeholder="A short description"
+              rows={2}
               value={form.description}
               onChange={(e) =>
                 setForm({ ...form, description: e.target.value })
               }
             />
-            <Input
-              label="Price"
-              name="price"
-              type="number"
-              step="0.01"
-              min="0.01"
+          </div>
+
+          <div className="amodal-field">
+            <label htmlFor="mnu-price">Price (₹)</label>
+            <input
+              id="mnu-price"
+              className="amodal-input"
+              type="text"
+              inputMode="decimal"
+              placeholder="0.00"
               value={form.price}
-              onChange={(e) => setForm({ ...form, price: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, price: sanitizePrice(e.target.value) })
+              }
               required
             />
+          </div>
 
-            <label className="mnu-form-label">
-              Category
-              <select
-                value={form.category_id}
-                onChange={(e) =>
-                  setForm({ ...form, category_id: e.target.value })
-                }
-                required
-              >
-                <option value="">Select category</option>
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
-            </label>
+          <div className="amodal-field">
+            <label htmlFor="mnu-stock">Current Stock</label>
+            <input
+              id="mnu-stock"
+              className="amodal-input"
+              type="text"
+              inputMode="numeric"
+              placeholder="0"
+              value={form.current_stock}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  current_stock: sanitizeWholeNumber(e.target.value),
+                })
+              }
+              required
+            />
+          </div>
 
-            <label className="mnu-form-checkbox">
+          <div className="amodal-field">
+            <label htmlFor="mnu-category">Category</label>
+            <select
+              id="mnu-category"
+              className="amodal-select"
+              value={form.category_id}
+              onChange={(e) =>
+                setForm({ ...form, category_id: e.target.value })
+              }
+              required
+            >
+              <option value="">Select category</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="amodal-field">
+            <span className="amodal-fake-label">Availability</span>
+            <label className="amodal-switch">
               <input
                 type="checkbox"
                 checked={form.available}
@@ -283,62 +488,73 @@ function AdminMenu() {
                   setForm({ ...form, available: e.target.checked })
                 }
               />
-              Available
+              <span className="amodal-switch-track" />
+              {form.available ? "Available" : "Unavailable"}
             </label>
+          </div>
 
-            <Input
-              label="Current Stock"
-              name="current_stock"
-              type="number"
-              min="0"
-              value={form.current_stock}
-              onChange={(e) =>
-                setForm({ ...form, current_stock: e.target.value })
-              }
-              required
-            />
-
-            <Input
-              label="Image URL"
-              name="image_url"
+          <div className="amodal-field amodal-wide">
+            <label htmlFor="mnu-image">Image URL</label>
+            <input
+              id="mnu-image"
+              className="amodal-input"
+              type="text"
+              placeholder="https://..."
               value={form.image_url}
               onChange={(e) => setForm({ ...form, image_url: e.target.value })}
             />
+          </div>
 
-            {formError && <div className="adm-error">{formError}</div>}
+          {formError && <div className="adm-error amodal-wide">{formError}</div>}
 
-            <div className="mnu-form-actions">
-              <Button type="submit">
-                {editingId ? "Save Changes" : "Add Item"}
-              </Button>
-              <Button variant="secondary" onClick={() => setShowForm(false)}>
+          <div className="amodal-actions amodal-wide">
+            <span className="amodal-corner-leaf" aria-hidden="true">
+              <LeafIcon size={56} />
+            </span>
+            <button type="button" className="adm-btn-soft" onClick={closeForm}>
+              Cancel
+            </button>
+            <button type="submit" className="adm-btn">
+              {editingId ? "Save Changes" : "Add Item"}
+            </button>
+          </div>
+        </form>
+      </AdminModal>
+
+      {/* Delete confirmation popup */}
+      <AdminModal
+        open={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        size="small"
+        label="Delete item"
+      >
+        {deleteTarget && (
+          <div className="amodal-confirm">
+            <span className="amodal-confirm-icon">
+              <TrashIcon size={30} />
+            </span>
+
+            <h2>Delete this item?</h2>
+            <p>
+              Are you sure you want to delete <strong>{deleteTarget.name}</strong>
+              ? This can't be undone.
+            </p>
+
+            <div className="amodal-actions amodal-center">
+              <button
+                type="button"
+                className="adm-btn-soft"
+                onClick={() => setDeleteTarget(null)}
+              >
                 Cancel
-              </Button>
+              </button>
+              <button type="button" className="adm-btn" onClick={confirmDelete}>
+                Delete
+              </button>
             </div>
-          </form>
-        </Modal>,
-        document.body
-      )}
-
-      {createPortal(
-        <Modal isOpen={!!deleteTarget} onClose={() => setDeleteTarget(null)}>
-          {deleteTarget && (
-            <>
-              <p>Are you sure you want to delete "{deleteTarget.name}"?</p>
-              <div className="mnu-form-actions">
-                <Button
-                  variant="secondary"
-                  onClick={() => setDeleteTarget(null)}
-                >
-                  Cancel
-                </Button>
-                <Button onClick={confirmDelete}>Delete</Button>
-              </div>
-            </>
-          )}
-        </Modal>,
-        document.body
-      )}
+          </div>
+        )}
+      </AdminModal>
     </AdminPage>
   );
 }

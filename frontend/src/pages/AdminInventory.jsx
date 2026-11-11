@@ -138,8 +138,8 @@ const AdminInventory = () => {
   return (
     <AdminPage>
       <AdminPageHeader
-        title="Inventory Management"
-        subtitle="Record daily food waste and review the history."
+        title="Record Daily Waste"
+        subtitle="Record how much food was prepared, sold, and wasted."
       />
 
       {message && <div className="adm-message">{message}</div>}
@@ -147,14 +147,6 @@ const AdminInventory = () => {
 
       {/* Record Waste */}
       <section className="adm-card inv-panel">
-        <h2 className="adm-section-title">
-          <Squiggle size={24} />
-          Record Daily Waste
-        </h2>
-        <p className="inv-sub">
-          Record how much food was prepared, sold, and wasted.
-        </p>
-
         <form className="inv-waste-form" onSubmit={submitWaste}>
           <div className="adm-field">
             <label htmlFor="menu-item-id">Menu Item ID</label>

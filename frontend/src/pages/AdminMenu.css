@@ -1,6 +1,77 @@
+/* =========================
+   Toolbar + search
+   ========================= */
+
 .mnu-toolbar {
   display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-md);
 }
+
+.mnu-search {
+  display: flex;
+  align-items: center;
+  flex: 1 1 280px;
+  max-width: 460px;
+  height: 46px;
+  padding: 0 16px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-text-muted);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mnu-search:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(233, 111, 145, 0.15);
+}
+
+.mnu-search input {
+  flex: 1;
+  min-width: 0;
+  margin-left: 10px;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: var(--font-size-md);
+}
+
+.mnu-search input::placeholder {
+  color: var(--color-text-muted);
+  opacity: 0.7;
+}
+
+.mnu-search-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  cursor: pointer;
+}
+
+.mnu-search-clear:hover {
+  background: #f3b3c5;
+}
+
+.mnu-count {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* =========================
+   Menu list
+   ========================= */
 
 .mnu-list {
   display: flex;
@@ -20,10 +91,6 @@
   display: flex;
   flex-shrink: 0;
   opacity: 0.85;
-}
-
-.mnu-row .mnu-leaf:last-child {
-  margin-left: 0;
 }
 
 .mnu-thumb {
@@ -70,42 +137,358 @@
   gap: var(--space-sm);
 }
 
-/* modal form */
-.mnu-form {
+/* =========================
+   Popups (Add / Edit / Delete) - same look as the cart
+   ========================= */
+
+.amodal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
   display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md);
+  overflow-y: auto;
+  background: rgba(74, 41, 35, 0.25);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
-.mnu-form-label {
+.amodal {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  max-height: 92vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 24px 28px 28px;
+  background: var(--color-surface);
+  border-radius: 28px;
+  box-shadow: 0 24px 60px rgba(74, 41, 35, 0.22);
+  color: var(--color-text);
+}
+
+.amodal-small {
+  max-width: 420px;
+  text-align: center;
+}
+
+.amodal-header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.amodal-logo {
+  display: block;
+  height: 60px;
+  width: auto;
+}
+
+.amodal-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--color-text);
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.amodal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: start;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: white;
+  cursor: pointer;
+}
+
+.amodal-close:hover {
+  background: var(--color-primary-dark);
+}
+
+/* live preview row (like a cart item) */
+.amodal-preview {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+  padding: 10px var(--space-md);
+  border: 1px solid var(--color-primary-light);
+  border-radius: 18px;
+}
+
+.amodal-preview-tile {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 88px;
+  height: 72px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 14px;
+  background: var(--color-primary-light);
+}
+
+.amodal-preview-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.amodal-preview-tile::before,
+.amodal-preview-tile::after {
+  content: "";
+  position: absolute;
+  top: 10px;
+  width: 12px;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--color-primary);
+}
+
+.amodal-preview-tile::before {
+  left: 10px;
+  transform: rotate(-35deg);
+}
+
+.amodal-preview-tile::after {
+  right: 10px;
+  transform: rotate(35deg);
+}
+
+.amodal-preview-info {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
+  min-width: 0;
+}
+
+.amodal-preview-info strong {
+  overflow: hidden;
+  color: var(--color-text);
+  font-size: var(--font-size-lg);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.amodal-preview-info span {
+  color: var(--color-primary);
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+}
+
+/* form */
+.amodal-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 16px;
+}
+
+.amodal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.amodal-wide {
+  grid-column: 1 / -1;
+}
+
+.amodal-field label,
+.amodal-fake-label {
+  margin-left: 12px;
+  color: var(--color-text);
+  font-size: 14px;
   font-weight: 600;
 }
 
-.mnu-form-label select {
-  height: 42px;
-  padding: 0 14px;
+.amodal-input,
+.amodal-select,
+.amodal-textarea {
+  width: 100%;
+  box-sizing: border-box;
   border: 1px solid var(--color-border);
-  border-radius: 12px;
   background: var(--color-surface);
   color: var(--color-text);
   font-family: inherit;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.mnu-form-checkbox {
+.amodal-input,
+.amodal-select {
+  height: 46px;
+  padding: 0 20px;
+  border-radius: 999px;
+}
+
+.amodal-textarea {
+  min-height: 76px;
+  padding: 12px 20px;
+  border-radius: 20px;
+  resize: vertical;
+}
+
+.amodal-select {
+  padding-right: 44px;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='%23E96F91' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 18px center;
+}
+
+.amodal-input::placeholder,
+.amodal-textarea::placeholder {
+  color: var(--color-text-muted);
+  opacity: 0.7;
+}
+
+.amodal-input:focus,
+.amodal-select:focus,
+.amodal-textarea:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(233, 111, 145, 0.15);
+}
+
+/* availability switch */
+.amodal-switch {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: 12px;
+  height: 46px;
+  color: var(--color-text);
   font-weight: 600;
+  cursor: pointer;
 }
 
-.mnu-form-actions {
-  display: flex;
-  gap: var(--space-sm);
-  margin-top: var(--space-sm);
+.amodal-switch input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
 }
+
+.amodal-switch-track {
+  position: relative;
+  width: 46px;
+  height: 26px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: var(--color-border);
+  transition: background-color 0.2s ease;
+}
+
+.amodal-switch-track::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.amodal-switch input:checked + .amodal-switch-track {
+  background: var(--color-primary);
+}
+
+.amodal-switch input:checked + .amodal-switch-track::after {
+  transform: translateX(20px);
+}
+
+.amodal-switch input:focus-visible + .amodal-switch-track {
+  box-shadow: 0 0 0 3px rgba(233, 111, 145, 0.25);
+}
+
+/* footer buttons + corner leaf */
+.amodal-actions {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 6px;
+  padding-left: 72px;
+}
+
+.amodal-actions .adm-btn,
+.amodal-actions .adm-btn-soft {
+  padding: 13px 28px;
+  font-size: 15px;
+}
+
+.amodal-corner-leaf {
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  transform: rotate(-12deg);
+  pointer-events: none;
+}
+
+/* delete confirmation */
+.amodal-confirm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.amodal-confirm-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
+.amodal-confirm h2 {
+  margin: 4px 0 0;
+  color: var(--color-text);
+  font-size: 26px;
+}
+
+.amodal-confirm p {
+  margin: 0;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.amodal-confirm p strong {
+  color: var(--color-text);
+}
+
+.amodal-center {
+  justify-content: center;
+  width: 100%;
+  margin-top: var(--space-sm);
+  padding-left: 0;
+}
+
+/* =========================
+   Mobile
+   ========================= */
 
 @media (max-width: 700px) {
   .mnu-leaf {
@@ -124,5 +507,45 @@
   .mnu-actions {
     width: 100%;
     justify-content: flex-end;
+  }
+
+  .mnu-search {
+    max-width: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .amodal {
+    padding: 18px 16px 22px;
+    border-radius: 22px;
+  }
+
+  .amodal-logo {
+    height: 42px;
+  }
+
+  .amodal-title {
+    font-size: 22px;
+  }
+
+  .amodal-title svg:first-child,
+  .amodal-title svg:nth-last-child(2) {
+    display: none;
+  }
+
+  .amodal-form {
+    grid-template-columns: 1fr;
+  }
+
+  .amodal-actions {
+    padding-left: 0;
+  }
+
+  .amodal-actions > button {
+    flex: 1;
+  }
+
+  .amodal-corner-leaf {
+    display: none;
   }
 }
